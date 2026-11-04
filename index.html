@@ -265,10 +265,20 @@ button { cursor: pointer; border: none; background: none; }
 .v-body .m { font-size: 14px; font-weight: 700; }
 .v-body .s { font-size: 12px; color: var(--brand2); margin-top: 2px; }
 .v-body .ex { font-size: 12px; color: var(--muted); margin-top: 2px; font-style: italic; }
-.blur-word .v-head .w-txt { filter: blur(6px); cursor: pointer; }
+.blur-word .v-head .w-txt { filter: blur(8px); cursor: pointer; }
 .blur-word .vrow.reveal .v-head .w-txt { filter: none; }
-.blur-mean .v-body { filter: blur(6px); cursor: pointer; user-select: none; }
-.blur-mean .vrow.reveal .v-body { filter: none; }
+.v-body .kor-mask {
+  display: none;
+  background: var(--brand-bg); color: var(--brand); border: 1px dashed var(--brand2);
+  padding: 5px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; user-select: none; width: fit-content;
+}
+.blur-mean .vrow:not(.reveal) .v-body .m { display: none; }
+.blur-mean .vrow:not(.reveal) .v-body .kor-mask { display: inline-flex; align-items: center; gap: 5px; }
+.blur-mean .vrow:not(.reveal) .v-body .s .kor-tag { display: none; }
+.blur-mean .vrow.reveal .v-body .m {
+  background: var(--ok-bg); padding: 3px 7px; border-radius: 6px; display: inline-block;
+}
 .v-ctrls { display: flex; gap: 4px; align-items: center; }
 .st-dot {
   width: 29px; height: 29px; border-radius: 8px; font-size: 12.5px; font-weight: 800;
@@ -324,6 +334,7 @@ button { cursor: pointer; border: none; background: none; }
     <span class="dday-badge" id="ddayBadge">11/15 시험</span>
   </div>
   <div class="hdr-actions">
+    <button class="hdr-btn" id="btnHeaderBlurMean" style="background:#fbbf24;color:#1e293b;font-weight:800">🙈 한국어뜻 가리기</button>
     <button class="hdr-btn" id="btnSearchModal">🔍 검색</button>
     <button class="hdr-btn" id="btnSyncModal">📱 폰연동</button>
     <button class="hdr-btn" id="btnTheme">🌙</button>
@@ -519,6 +530,12 @@ function updateHeader() {
   $('#ddayBadge').textContent = diff > 0 ? `11/15 시험 D-${diff}` : (diff === 0 ? '🔥 D-Day!' : `D+${Math.abs(diff)}`);
   document.body.classList.toggle('dark', !!pref.dark);
   $('#btnTheme').textContent = pref.dark ? '☀️' : '🌙';
+  const hbm = $('#btnHeaderBlurMean');
+  if (hbm) {
+    hbm.textContent = pref.blurMean ? '👀 한국어뜻 켜기' : '🙈 한국어뜻 가리기';
+    hbm.style.background = pref.blurMean ? '#22c55e' : '#fbbf24';
+    hbm.style.color = pref.blurMean ? '#ffffff' : '#1e293b';
+  }
   $$('.bottom-nav .nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === pref.tab));
 }
 
@@ -811,18 +828,18 @@ function renderListTab(view) {
 
   let html = renderTrackBar() + renderFilterControls(list.length);
   html += `
-  <div class="panel" style="padding:10px 13px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between">
-    <div style="display:flex;gap:6px;flex-wrap:wrap">
-      <button class="chip ${pref.blurMean?'active':''}" id="togBlurMean">🙈 뜻 가리기 (셀프테스트)</button>
-      <button class="chip ${pref.blurWord?'active':''}" id="togBlurWord">🙈 단어 가리기</button>
-      <button class="chip ${pref.showSynInList?'active':''}" id="togShowSyn">🔗 동의어·예문</button>
+  <div class="panel" style="padding:10px 13px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;position:sticky;top:52px;z-index:35;box-shadow:var(--shadow)">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <button class="chip ${pref.blurMean?'active':''}" id="togBlurMean" style="font-size:13px;padding:7px 13px">${pref.blurMean ? '👀 한국어 뜻 켜기 (가림 ON)' : '🙈 한국어 뜻 가리기'}</button>
+      <button class="chip ${pref.blurWord?'active':''}" id="togBlurWord">${pref.blurWord ? '👀 영단어 켜기' : '🙈 영단어 가리기'}</button>
+      <button class="chip ${pref.showSynInList?'active':''}" id="togShowSyn">🔗 동의어·예문 ${pref.showSynInList?'ON':'OFF'}</button>
       <button class="btn sm" id="btnJumpQuiz">🎯 이 범위 시험보기</button>
     </div>
     ${totalPages > 1 ? `<div style="display:flex;gap:6px;align-items:center;font-size:12.5px">
       <button class="btn ghost sm" id="pgPrev" ${listPage<=1?'disabled':''}>◀</button>
       <span><b>${listPage}</b>/${totalPages}</span>
       <button class="btn ghost sm" id="pgNext" ${listPage>=totalPages?'disabled':''}>▶</button>
-    </div>` : `<span style="font-size:12px;color:var(--muted)">단어를 터치하면 가려진 뜻이 보입니다</span>`}
+    </div>` : `<span style="font-size:12px;color:var(--muted)">${pref.blurMean ? '👆 개별 단어를 터치하면 그 단어 뜻만 열립니다' : '🙈 버튼을 누르면 한국어 뜻만 싹 가려집니다'}</span>`}
   </div>
 
   <div class="vlist ${pref.blurMean?'blur-mean':''} ${pref.blurWord?'blur-word':''}">
@@ -830,6 +847,7 @@ function renderListTab(view) {
       const s = getWordState(x.word);
       const stCls = s.st===3?'st-ok':(s.st===2?'st-warn':(s.st===1?'st-bad':''));
       const num = (listPage - 1) * PAGE_SIZE + idx + 1;
+      const synFormatted = x.synonyms ? esc(x.synonyms).replace(/&lt;([^&]+)&gt;/g, '<span class="kor-tag">&lt;$1&gt;</span>') : '';
       return `<div class="vrow ${stCls}" data-word="${esc(x.word)}">
         <div class="v-head">
           <div class="w">
@@ -840,8 +858,9 @@ function renderListTab(view) {
           <div class="p" style="padding-left:28px">${esc(x.pron || x.chapter || (x.gday?`Day ${x.gday}`:''))} ${x.freq?`· <b style="color:var(--warn)">기출 ${x.freq}회</b>`:''}</div>
         </div>
         <div class="v-body">
+          <div class="kor-mask">👆 한국어 뜻 보기 (터치)</div>
           <div class="m">${esc(x.meaning)}</div>
-          ${pref.showSynInList && x.synonyms ? `<div class="s">🔗 ${esc(x.synonyms)}</div>` : ''}
+          ${pref.showSynInList && synFormatted ? `<div class="s">🔗 ${synFormatted}</div>` : ''}
           ${pref.showSynInList && x.example ? `<div class="ex">💬 ${esc(x.example)}</div>` : ''}
         </div>
         <div class="v-ctrls">
@@ -1589,6 +1608,12 @@ $$('.bottom-nav .nav-item').forEach(b => {
 });
 
 $('#btnTheme').addEventListener('click', () => { pref.dark = !pref.dark; savePref(); updateHeader(); });
+$('#btnHeaderBlurMean')?.addEventListener('click', () => {
+  pref.blurMean = !pref.blurMean;
+  if (pref.tab === 'plan') pref.tab = 'list';
+  savePref();
+  render();
+});
 $('#btnSearchModal').addEventListener('click', openSearchModal);
 $('#btnSyncModal').addEventListener('click', openSyncModal);
 $('#modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') $('#modalOverlay').classList.add('hidden'); });
