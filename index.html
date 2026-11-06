@@ -355,11 +355,28 @@ button { cursor: pointer; border: none; background: none; }
   <button class="nav-item" data-tab="writing"><span class="ico">✍️</span><span>라이팅</span></button>
 </nav>
 
-<script src="./data.js?v=6"></script>
+<script src="data.js"></script>
 <script>
 (function(){
 'use strict';
-const M = window.GRE_MASTER_DATA || window.GRE_MASTER;
+let M = window.GRE_MASTER_DATA || window.GRE_MASTER;
+if (M && M.quant && M.quant.length < 140 && location.protocol.startsWith('http')) {
+  if ('caches' in window) {
+    caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k))));
+  }
+  fetch('./data.js?bust=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.text())
+    .then(txt => {
+      const idx = txt.indexOf('{');
+      const ridx = txt.lastIndexOf('}');
+      if (idx !== -1 && ridx !== -1) {
+        const fresh = JSON.parse(txt.slice(idx, ridx + 1));
+        window.GRE_MASTER_DATA = window.GRE_MASTER = M = fresh;
+        if (typeof TRACKS !== 'undefined' && TRACKS[3]) TRACKS[3].cnt = M.quant.length;
+        if (typeof render === 'function') render();
+      }
+    }).catch(() => {});
+}
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -430,7 +447,7 @@ function pushServerSync() {
 }
 pullServerSync();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js?v=7').then(r => r.update()).catch(() => {});
 }
 
 function savePref() { saveJSON(SK_PREF, pref); }
