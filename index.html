@@ -360,7 +360,7 @@ button { cursor: pointer; border: none; background: none; }
 (function(){
 'use strict';
 let M = window.GRE_MASTER_DATA || window.GRE_MASTER;
-if (M && M.quant && M.quant.length < 140 && location.protocol.startsWith('http')) {
+if (M && M.quant && (M.quant.length < 140 || (M.quant[0] && M.quant[0].pron)) && location.protocol.startsWith('http')) {
   if ('caches' in window) {
     caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k))));
   }
@@ -447,7 +447,7 @@ function pushServerSync() {
 }
 pullServerSync();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('./sw.js?v=7').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('./sw.js?v=8').then(r => r.update()).catch(() => {});
 }
 
 function savePref() { saveJSON(SK_PREF, pref); }
@@ -894,7 +894,7 @@ function renderListTab(view) {
             <span class="w-txt" style="cursor:pointer" title="터치하면 발음 재생">${esc(x.word)}</span>
             <button type="button" data-sp="${esc(x.word)}" style="font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--chip);border:1px solid var(--line);cursor:pointer">🔊 발음</button>
           </div>
-          <div class="p" style="padding-left:28px">${esc(x.pron || x.chapter || (x.gday?`Day ${x.gday}`:''))} ${x.freq?`· <b style="color:var(--warn)">기출 ${x.freq}회</b>`:''}</div>
+          ${(x.pron || x.chapter || x.gday || x.freq) ? `<div class="p" style="padding-left:28px">${esc(x.pron || x.chapter || (x.gday?`Day ${x.gday}`:''))} ${x.freq?`· <b style="color:var(--warn)">기출 ${x.freq}회</b>`:''}</div>` : ''}
         </div>
         <div class="v-body">
           <div class="kor-mask">👆 한국어 뜻 보기 (터치)</div>
@@ -982,7 +982,7 @@ function renderCardTab(view) {
     <div class="fc-card ${stClass}" id="fcCard">
       <div class="fc-badges">
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <span class="badge">${esc(item.chapter || (item.gday ? `거만어 Day ${item.gday}` : `Day ${item.day10}`))}</span>
+          <span class="badge">${esc(item.chapter || item.category || (item.gday ? `거만어 Day ${item.gday}` : `Day ${item.day10}`))}</span>
           ${item.freq ? `<span class="badge freq">🔥 기출 ${item.freq}회</span>` : ''}
         </div>
         <button class="st-dot ${stObj.star?'on-star':''}" id="btnCardStar" style="width:34px;height:34px;font-size:16px">★</button>
