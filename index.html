@@ -1444,15 +1444,15 @@ const W_DRILLS = [
   },
   {
     id: 'skel_4',
-    group: '🧩 1파트: 5문단 만점 뼈대 (167단어)',
-    title: '🧩 [뼈대 4/4] 결론 (3문장 · 35단어)',
-    desc: '만병통치약(panacea)·이분법적 오류(false dichotomy)·도치구문(Not only does...)으로 채점관에게 강렬한 마지막 인상을 남기는 결론입니다.',
+    group: '🧩 1파트: 5문단 만점 뼈대 (168단어)',
+    title: '🧩 [뼈대 4/4] 결론 & 지시문 방어 (4문장 · 36단어)',
+    desc: '모든 주제(명제·정책)에 100% 호환되는 불변의 진리(immutable axiom)·이분법적 오류(false dichotomy)·도치구문(Not only does...) 결론과 consequences 지시문 방어 문장입니다.',
     sentences: [
       {
-        en: 'In conclusion, treating [...] as an unconditional panacea—or dismissing it altogether—rests on a false dichotomy.',
-        ko: '결론적으로, [주제 핵심어]를 무조건적인 만병통치약으로 취급하거나 반대로 완전히 묵살하는 것은 이분법적 오류에 기반한 것이다.',
-        b1: ['unconditional panacea', 'dismissing it altogether', 'rests on a false dichotomy'],
-        b2: ['In conclusion, treating', 'as an unconditional panacea', 'or dismissing it altogether', 'rests on a false dichotomy']
+        en: 'In conclusion, treating this proposition as an immutable axiom—or dismissing it altogether—rests on a false dichotomy.',
+        ko: '결론적으로, 이 명제를 불변의 절대 진리로 취급하거나 반대로 완전히 묵살하는 것은 이분법적 오류에 기반한다. (빈칸 없이 모든 주제 100% 호환!)',
+        b1: ['this proposition', 'immutable axiom', 'dismissing it altogether', 'rests on a false dichotomy'],
+        b2: ['In conclusion, treating this proposition', 'as an immutable axiom', 'or dismissing it altogether', 'rests on a false dichotomy']
       },
       {
         en: 'While [...] may prove efficacious in isolated instances, its indiscriminate application is ultimately untenable.',
@@ -1462,9 +1462,15 @@ const W_DRILLS = [
       },
       {
         en: 'Not only does [...], but it also [...].',
-        ko: '[단수주어+동사원형]할 뿐만 아니라, 그것은 또한 [단수동사]한다. (주의: does 뒤에 반드시 주어 + 동사원형!)',
+        ko: '[단수주어 + 동사원형]할 뿐만 아니라, 그것은 또한 [단수동사(-s/es)]한다. (주의: does 뒤에 반드시 주어 + 동사원형!)',
         b1: ['Not only does', 'but it also'],
         b2: ['Not only does', 'but it also']
+      },
+      {
+        en: 'If implemented indiscriminately, such an approach would precipitate severe unintended consequences, ranging from institutional stagnation to broader societal inefficiency.',
+        ko: '[보너스: 지시문에 consequences가 있을 때 본론 끝에 추가] 만약 무분별하게 시행된다면, 그러한 접근법은 제도적 침체부터 사회적 비효율에 이르는 심각한 의도치 않은 결과를 초래할 것이다.',
+        b1: ['implemented indiscriminately', 'precipitate', 'unintended consequences', 'institutional stagnation'],
+        b2: ['If implemented indiscriminately', 'such an approach would precipitate severe unintended consequences', 'ranging from institutional stagnation to broader societal inefficiency']
       }
     ]
   },
@@ -2123,27 +2129,32 @@ function renderWritingTab(view) {
       </div>
     </div>
     <div class="panel">
-      <div class="panel-title"><span>🧩 GRE Verbal 고급 어휘가 탑재된 '5.0+ 만점 5문단 뼈대' (순수 영어 167단어)</span></div>
+      <div class="panel-title"><span>🧩 GRE Verbal 고급 어휘가 탑재된 '5.0+ 만점 5문단 뼈대' (순수 영어 168단어)</span></div>
       <div class="fc-box" style="font-family:Georgia,serif;font-size:13.5px;line-height:1.7">
         <b>[서론 - 4문장 | 고급어휘: <span style="color:var(--brand)">warrants rigorous scrutiny, laden with, fraught with, myopic, reductionist, contingent, monolithic, discerning</span>]</b><br>
         The assertion that <b>[주제 패러프레이징]</b> <u>warrants rigorous scrutiny</u>, as it is <u>laden with appreciable merits</u> yet <u>fraught with profound limitations</u>. While proponents <u>contend</u> that <b>[상대방 측 논리]</b>, skeptics counter that such a view is overly <u>myopic</u> and <u>reductionist</u>. Although the claim holds <u>contingent validity</u> in narrow contexts, I fundamentally disagree with the <u>monolithic premise</u> that <b>[내가 반박할 획일적 주장(주어+동사)]</b>. Instead, a <u>discerning</u> examination reveals that <b>[내 핵심 테제 1문장]</b>.<br><br>
-        <b>[본론 1: 양보 문단 - 4문장 | 고급어휘: <span style="color:var(--brand)">Admittedly, exigent, pragmatic expedient, acute, paramount</span>]</b><br>
+        <b>[본론 1: 양보 문단 - 4문장 | 고급어휘: <span style="color:var(--brand)">Admittedly, specialized or formative, pragmatic expedient, constraints</span>]</b><br>
         <u>Admittedly</u>, in certain <u>specialized or formative contexts</u>, <b>[상대방 입장이 맞을 수 있는 조건]</b> can serve as a <u>pragmatic expedient</u>. For instance, consider the case of <b>[양보 예시]</b>. In such <u>specific</u> scenarios, <b>[예시 설명 2문장]</b>. This illustrates that <u>under these particular constraints</u>, the merits of <b>[상대방 주장 명사구]</b> cannot be entirely dismissed.<br><br>
         <b>[본론 2: 내 핵심 주장 1 - 5~6문장 | 고급어휘: <span style="color:var(--brand)">extrapolated, paradigm, vividly exemplified by, empirical, corroborates</span>]</b><br>
         However, when <u>extrapolated</u> to a broader <u>paradigm</u>, <b>[내 주장 1 Topic Sentence — 동사는 <i>stifle/undermine/impede</i> 또는 <i>foster/catalyze/bolster</i> 사용]</b>. This dynamic is <u>vividly exemplified by</u> <b>[만능 예시 1: 핀란드 교육 & 노키아·슈퍼셀 / 황우석 줄기세포 조작]</b>. Specifically, <b>[구체적 수치·내용 2~3문장]</b>. Thus, this <u>empirical</u> case <u>corroborates</u> that <b>[프롬프트 원문 키워드로 Tie-back]</b>.<br><br>
         <b>[본론 3: 내 핵심 주장 2 - 5~6문장 | 고급어휘: <span style="color:var(--brand)">overarching, compelling illustration, epitomizes</span>]</b><br>
         Furthermore, from an <u>overarching</u> societal perspective, <b>[내 주장 2 Topic Sentence — 형용사는 <i>counterproductive/pernicious</i> 또는 <i>indispensable/salutary</i> 사용]</b>. A <u>compelling illustration</u> of this principle is <b>[만능 예시 2: 케냐 Dupas 성교육 실험(HIV 28% 감소) / 한나 아렌트 '악의 평범성']</b>. <b>[구체적 결과 설명 2~3문장]</b>. Ultimately, this phenomenon <u>epitomizes</u> how <b>[프롬프트 원문 키워드로 Tie-back]</b>.<br><br>
-        <b>[결론 - 3문장 | 고급어휘: <span style="color:var(--brand)">panacea, false dichotomy, efficacious, indiscriminate, untenable</span>]</b><br>
-        In conclusion, treating <b>[주제 핵심어]</b> as an unconditional <u>panacea</u>—or dismissing it altogether—rests on a <u>false dichotomy</u>. While <b>[양보 조건 요약]</b> may prove <u>efficacious</u> in isolated instances, its <u>indiscriminate</u> application is ultimately <u>untenable</u>. Not only does <b>[내 핵심 근거 1]</b>, but it also <b>[내 핵심 근거 2]</b>.
+        <b>[결론 - 3문장 | 고급어휘: <span style="color:var(--brand)">immutable axiom, false dichotomy, efficacious, indiscriminate, untenable</span>]</b><br>
+        In conclusion, treating <u>this proposition as an immutable axiom</u>—or dismissing it altogether—rests on a <u>false dichotomy</u>. While <b>[양보 조건 요약]</b> may prove <u>efficacious</u> in isolated instances, its <u>indiscriminate</u> application is ultimately <u>untenable</u>. Not only does <b>[단수주어 + 동사원형: 내 핵심 근거 1]</b>, but it also <b>[단수동사(-s/es): 내 핵심 근거 2]</b>.
       </div>
       <div class="fc-box" style="margin-top:8px;background:var(--brand-bg);border-color:var(--brand)">
-        <div class="lbl">⚠️ 지시문(Instruction) 특수 유형 2가지일 때 '서론 3번째 문장' 딱 한 줄만 이렇게 바꾸세요!</div>
-        <div style="font-size:12.5px;line-height:1.6">
-          • <b>기본형 (전체의 73% — 일반 찬반·성립조건·반론·정책·결과 유형)</b>: 위 뼈대 그대로 100% 사용!<br>
-          • <b>특수형 ① 양측 입장 비교 (<i>"Some people believe A. Others believe B. Discuss which view..."</i> — 21문항)</b>:<br>
+        <div class="lbl">🛡️ 채점관·e-rater 감점 방어 & 특수 지시문(Instruction) 완벽 대응 가이드</div>
+        <div style="font-size:12.5px;line-height:1.65">
+          • <b>① 결론 첫 문장 의미 충돌 0% 방어 (<code>immutable axiom</code> vs <code>panacea</code>)</b>:<br>
+          &nbsp;&nbsp;👉 기본 뼈대의 <i>"treating <u>this proposition as an immutable axiom</u>(이 명제를 불변의 절대 진리로 취급하는 것)"</i>은 빈칸 없이 <b>모든 명제형·정책형 주제에 100% 어색함 없이 호환</b>됩니다! (정책·해결책 주제일 때만 원하시면 <i>treating [정책] as an unconditional panacea</i>를 쓰셔도 됩니다.)<br>
+          • <b>② 지시문에 <code>consequences(결과 예측)</code>가 있을 때 (본론 2 또는 본론 3 끝에 1문장 추가)</b>:<br>
+          &nbsp;&nbsp;👉 <i>"If <u>implemented indiscriminately</u>, such an approach would <u>precipitate severe unintended consequences</u>, ranging from institutional stagnation to broader societal inefficiency."</i><br>
+          • <b>③ 특수 지시문 — 양측 입장 비교 (<i>"Some people believe A. Others believe B..."</i>)</b>:<br>
           &nbsp;&nbsp;👉 서론 3번째 문장만: <i>"Although the former view holds <u>contingent validity</u> in narrow contexts, my position more closely aligns with the latter view that <b>[내가 지지하는 입장]</b>."</i><br>
-          • <b>특수형 ② 주장+이유 동시 평가 (<i>"...agree or disagree with the claim AND the reason on which that claim is based"</i> — 26문항)</b>:<br>
-          &nbsp;&nbsp;👉 서론 3번째 문장만: <i>"Although the underlying reason holds <u>contingent validity</u> in narrow contexts, I fundamentally disagree with both the overarching claim and the <u>monolithic premise</u> on which it rests."</i>
+          • <b>④ 특수 지시문 — 주장+이유 동시 평가 (<i>"...agree or disagree with the claim AND the reason..."</i>)</b>:<br>
+          &nbsp;&nbsp;👉 서론 3번째 문장만: <i>"Although the underlying reason holds <u>contingent validity</u> in narrow contexts, I fundamentally disagree with both the overarching claim and the <u>monolithic premise</u> on which it rests."</i><br>
+          • <b>⑤ 유창성 격차(Fluency Gap) & 도치구문 문법 주의</b>:<br>
+          &nbsp;&nbsp;👉 결론 마지막 문장 <code>Not only does</code> 뒤에는 반드시 <b>[단수주어 + 동사원형]</b>이 와야 합니다! (예: <i>Not only does <u>excessive grade competition erode</u> intrinsic motivation, but it also <u>impedes</u> collaborative inquiry.</i>)
         </div>
       </div>
     </div>
@@ -2252,8 +2263,8 @@ However, when extrapolated to a broader paradigm, [내 주장 1 Topic Sentence: 
 
 Furthermore, from an overarching societal perspective, [내 주장 2 Topic Sentence: 왜 장기적으로 역효과(counterproductive)를 낳거나 필수적(indispensable)인지]. A compelling illustration of this principle is [본론2 예시: 케냐 Dupas 성교육 연구(HIV 28% 감소) / 한나 아렌트 악의 평범성]. [구체적 결과 설명 2~3문장]. Ultimately, this phenomenon epitomizes how [프롬프트 원문 키워드로 연결(Tie-back)].
 
-In conclusion, treating [주제 핵심어] as an unconditional panacea—or dismissing it altogether—rests on a false dichotomy. While [양보 조건 요약] may prove efficacious in isolated instances, its indiscriminate application is ultimately untenable. Not only does [내 핵심 근거 1 요약], but it also [내 핵심 근거 2 요약].`;
-      if (!essEl.value.trim() || confirm('현재 작성 중인 에세이 창에 업그레이드된 5.0+ 고급어휘 5문단 뼈대(순수 영어 167단어)를 넣을까요?')) {
+In conclusion, treating this proposition as an immutable axiom—or dismissing it altogether—rests on a false dichotomy. While [양보 조건 요약] may prove efficacious in isolated instances, its indiscriminate application is ultimately untenable. Not only does [단수주어 + 동사원형: 내 핵심 근거 1], but it also [단수동사(-s/es): 내 핵심 근거 2].`;
+      if (!essEl.value.trim() || confirm('현재 작성 중인 에세이 창에 업그레이드된 5.0+ 고급어휘 5문단 뼈대(순수 영어 168단어)를 넣을까요?')) {
         essEl.value = skel;
         saveW();
       }
