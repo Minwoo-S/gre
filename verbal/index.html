@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRE Verbal 모의고사</title>
+<style>
+:root{
+  --bg:#f3f3f6; --panel:#ffffff; --ink:#1d1d24; --muted:#6b6b78; --line:#d9d9e2;
+  --brand:#1f5c4a; --brand2:#2e7d66; --bar:#17463a; --accent:#e1f0ea;
+  --ok:#1f8a4c; --okbg:#e3f4ea; --bad:#c0392b; --badbg:#fbe7e5; --warn:#b7791f; --warnbg:#fdf3e1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI","Malgun Gothic",sans-serif}
+button{font:inherit;cursor:pointer}
+.hidden{display:none!important}
+.serif{font-family:Georgia,"Times New Roman",serif;font-size:16.5px;line-height:1.75}
+
+/* Home */
+.home{max-width:1000px;margin:0 auto;padding:32px 16px 64px}
+.home h1{font-size:26px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.card h3{margin:0;font-size:17px}
+.card .meta{font-size:12.5px;color:var(--muted)}
+.card .last{font-size:12.5px}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:8px;padding:7px 13px;font-weight:600}
+.btn:hover{background:var(--brand2)}
+.btn.ghost{background:transparent;color:var(--brand)}
+.btn.ghost:hover{background:var(--accent)}
+.btn.small{padding:4px 10px;font-size:13px}
+.info{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:20px;font-size:14px}
+.info h2{font-size:16px;margin:0 0 8px}
+.info ul{margin:6px 0;padding-left:20px}
+.opts{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0 14px;font-size:14px}
+.opts label{display:flex;gap:6px;align-items:center}
+.hist table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);font-size:14px}
+.hist th,.hist td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+
+/* Test */
+.test{display:flex;flex-direction:column;height:100vh}
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.topbar .title{font-weight:700;margin-right:auto;white-space:nowrap}
+.tb{background:#fff1;border:1px solid #fff5;color:#fff;border-radius:6px;padding:6px 12px;font-weight:600;font-size:14px}
+.tb:hover{background:#fff3}
+.tb.on{background:#fff;color:var(--bar)}
+.tb:disabled{opacity:.4;cursor:default}
+.subbar{background:#e4efe9;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:6px 14px;font-size:14px;flex-wrap:wrap}
+.subbar .qpos{font-weight:700}
+.subbar .timer{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700}
+.subbar .timer.low{color:var(--bad)}
+.subbar .mk{color:var(--warn);font-weight:700}
+.stage{flex:1;overflow:auto;padding:18px 14px 30px}
+.qwrap{max-width:900px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 26px}
+.qwrap.split{max-width:1500px;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media (max-width:1000px){.qwrap.split{grid-template-columns:1fr}}
+.pane{min-width:0}
+.pane.passage{border-right:1px solid var(--line);padding-right:22px;max-height:calc(100vh - 170px);overflow:auto}
+@media (max-width:1000px){.pane.passage{border-right:0;border-bottom:1px solid var(--line);padding:0 0 16px;max-height:none}}
+.grp{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px}
+.ptext p{margin:0 0 12px}
+mark.hl{background:#d9d9d9;padding:1px 0}
+.sent{cursor:pointer;border-radius:3px}
+.selmode .sent:hover{background:#fff3c4}
+.sent.picked{background:#cfe8ff;outline:1px solid #6aa9e9}
+.dirs{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:10px}
+.stem{margin-bottom:14px}
+.choices{display:flex;flex-direction:column;gap:7px}
+.choice{display:flex;align-items:flex-start;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;user-select:none}
+.choice:hover{background:#f4f9f7}
+.choice.sel{border-color:var(--brand);background:var(--accent)}
+.choice .mark{width:22px;height:22px;flex:none;border:2px solid #777;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:2px}
+.choice .mark.oval{border-radius:50%}
+.choice .mark.sq{border-radius:3px}
+.choice.sel .mark{background:var(--brand);border-color:var(--brand);color:#fff}
+.cols{display:grid;gap:14px}
+.col h4{margin:0 0 6px;font-size:13px;color:var(--muted);text-align:center}
+.col .opt{border:1px solid #999;margin:-1px 0 0;padding:9px 12px;text-align:center;cursor:pointer;background:#fff;user-select:none}
+.col .opt:hover{background:#f4f9f7}
+.col .opt.sel{background:var(--brand);color:#fff;border-color:var(--brand)}
+.hint{font-size:12px;color:var(--muted)}
+.review{max-width:900px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 22px}
+.review table{width:100%;border-collapse:collapse;font-size:14px}
+.review th,.review td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+.review tr.cur{background:var(--accent)}
+.review tbody tr{cursor:pointer}
+.na{color:var(--bad);font-weight:600}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:80;padding:16px}
+.modal .box{background:#fff;border-radius:12px;max-width:520px;width:100%;padding:20px 22px}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+
+/* Results */
+.results{max-width:1150px;margin:0 auto;padding:24px 16px 80px}
+.results h1{font-size:24px;margin:0 0 4px}
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .k{font-size:13px;color:var(--muted)} .stat .v{font-size:26px;font-weight:800} .stat .s{font-size:12px;color:var(--muted)}
+.bars{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:12px}
+.bars h3{margin:0 0 8px;font-size:15px}
+.brow{display:grid;grid-template-columns:150px 1fr 60px;gap:10px;align-items:center;font-size:13px;margin:5px 0}
+.btrack{height:12px;background:#e6ece9;border-radius:6px;overflow:hidden}
+.bfill{height:100%;background:var(--brand2)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+.item{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--line);border-radius:10px;margin-bottom:12px}
+.item.ok{border-left-color:var(--ok)} .item.bad{border-left-color:var(--bad)} .item.skip{border-left-color:var(--warn)}
+.item .ih{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 14px;cursor:pointer}
+.item .ih .n{font-weight:800}
+.tag{font-size:12px;padding:2px 8px;border-radius:20px;background:#eceff0;color:#444}
+.tag.ok{background:var(--okbg);color:var(--ok)} .tag.bad{background:var(--badbg);color:var(--bad)} .tag.skip{background:var(--warnbg);color:var(--warn)}
+.item .ib{padding:6px 16px 16px;border-top:1px solid var(--line)}
+.qview{background:#fbfcfb;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0}
+.qview .ptext{max-height:260px;overflow:auto;border-bottom:1px dashed var(--line);margin-bottom:10px;padding-bottom:6px;font-size:14.5px}
+.qview .clist div{padding:2px 0}
+.qview .clist .right{color:var(--ok);font-weight:700}
+.qview .clist .mine{text-decoration:underline wavy var(--bad)}
+.exgrid{display:grid;gap:8px}
+.exlab{font-size:12px;font-weight:800;color:var(--brand);margin-bottom:2px}
+.expl{white-space:pre-wrap;background:#f7faf8;border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14.5px}
+.mynote{margin-top:10px;border:1px dashed #b8a6e0;border-radius:8px;padding:10px 14px;background:#faf8ff}
+.ncats{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.ncat{font:inherit;font-size:13px;padding:3px 10px;border-radius:99px;border:1px solid #cfc3ea;background:#fff;color:#4b2e83;cursor:pointer}
+.ncat.on{background:#4b2e83;color:#fff;border-color:#4b2e83}
+.ntext{width:100%;min-height:64px;font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid #d9d2ea;resize:vertical;box-sizing:border-box}
+.trap{white-space:pre-wrap;background:var(--badbg);border:1px solid #f1c9c4;border-radius:8px;padding:10px 14px;font-size:14px}
+.trap .exlab{color:var(--bad)}
+.vocab{background:#fffbea;border:1px solid #f0e2a8;border-radius:8px;padding:8px 14px;font-size:14px}
+.vocab .exlab{color:#8a6d00}
+.ansline{font-size:14px;margin:6px 0}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+</style>
+</head>
+<body>
+<div style="background:#0f172a;color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px">
+  <a href="../index.html" style="color:#fff;text-decoration:none;font-weight:800;background:#2563eb;padding:5px 11px;border-radius:8px">🏠 단어장·라이팅 메인 앱으로</a>
+  <a href="../quant/index.html" style="color:#e2e8f0;text-decoration:none;font-weight:700;background:rgba(255,255,255,0.12);padding:5px 11px;border-radius:8px">🔢 Quant 모의고사 (15세트) ↗</a>
+</div>
+
+<div id="home" class="home">
+  <h1>GRE Verbal 모의고사</h1>
+  <p class="sub">Shorter GRE 형식 · Section 1 (12문항 / 18분) + Section 2 (15문항 / 23분, 고난도) · 강쌤 Verbal 모의테스트 문항을 섞어 재구성</p>
+  <div class="opts">
+    <label><input type="checkbox" id="optTimer" checked> 실전 타이머</label>
+    <label><input type="checkbox" id="optNoBack"> Section 1 종료 후 되돌아가기 금지</label>
+  </div>
+  <div id="cards" class="cards"></div>
+  <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn ghost" id="bWrong">📒 오답 노트</button>
+    <button class="btn ghost" id="bExport">📤 결과 내보내기 (분석용)</button>
+  </div>
+  <div id="resume" class="info hidden"></div>
+  <div class="hist" id="histBox" style="margin-top:20px"></div>
+  <div class="info">
+    <h2>사용법</h2>
+    <ul>
+      <li>문항 배치는 실제 시험 순서를 따릅니다. Section 1: TC 3 → 단문 독해 2 → SE 4 → 중문 독해 3 / Section 2: TC 4 → 단문 2 → 중문 3 → SE 3 → CR 1 → 단문 2</li>
+      <li>TC 2·3빈칸은 칸마다 하나씩, SE는 정확히 두 개를 고르세요(둘 다 맞아야 정답). "select all that apply"는 해당하는 것을 모두 골라야 정답입니다.</li>
+      <li>"Select the sentence" 문제는 왼쪽 지문에서 문장을 클릭해 선택합니다.</li>
+      <li>결과 화면에서 문항별 해설, 유형별 정답률, 선택지 단어 뜻을 볼 수 있습니다. 기록은 이 브라우저에 저장됩니다.</li>
+    </ul>
+  </div>
+</div>
+
+<div id="test" class="test hidden">
+  <div class="topbar">
+    <span class="title" id="tTitle">GRE Verbal</span>
+    <button class="tb" id="bQuit">Quit</button>
+    <button class="tb" id="bMark">Mark</button>
+    <button class="tb" id="bReview">Review</button>
+    <button class="tb" id="bBack">Back</button>
+    <button class="tb" id="bNext">Next</button>
+  </div>
+  <div class="subbar">
+    <span class="qpos" id="tPos"></span><span id="tSec"></span>
+    <span class="mk hidden" id="tMarked">★ Marked</span>
+    <span class="timer" id="tTimer"></span>
+    <button class="btn ghost small" id="bHideTimer">시간 숨기기</button>
+  </div>
+  <div class="stage" id="stage"></div>
+</div>
+
+<div id="results" class="results hidden"></div>
+<div id="modal" class="modal hidden"><div class="box" id="modalBox"></div></div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+'use strict';
+const D=window.GRV_DATA, P=D.passages;
+const $=s=>document.querySelector(s);
+const el=(tag,attrs={},html='')=>{const e=document.createElement(tag);for(const k in attrs){if(k==='class')e.className=attrs[k];else if(k.startsWith('on'))e.addEventListener(k.slice(2),attrs[k]);else e.setAttribute(k,attrs[k]);}if(html)e.innerHTML=html;return e;};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SEC_TIME=[18*60,23*60];
+const TN={TC:'Text Completion',SE:'Sentence Equivalence',RC_single:'Reading',RC_multi:'Reading (복수)',RC_select:'Reading (문장선택)',CR:'Critical Reasoning'};
+const TK=q=>q.type==='TC'?`TC ${q.blanks}빈칸`:({SE:'SE',RC_single:'RC 단일',RC_multi:'RC 복수',RC_select:'RC 문장선택',CR:'CR'}[q.type]);
+const DIRS={
+ TC1:'For the blank, select the entry that best completes the text.',
+ TCn:'For each blank, select one entry from the corresponding column of choices. Fill all blanks in the way that best completes the text.',
+ SE:'Select the two answer choices that, when used to complete the sentence, fit the meaning of the sentence as a whole and produce completed sentences that are alike in meaning.',
+ RC_single:'Select one answer choice.',
+ RC_multi:'Consider each of the choices separately and select all that apply.',
+ RC_select:'Click on the sentence in the passage that answers the question.',
+ CR:'Select one answer choice.'};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
+const HIST='grev_history_v1',CUR='grev_current_v1',PREF='grev_pref_v1';
+
+/* sentences */
+function splitSents(t){ return t.replace(/\s+/g,' ').trim().split(/(?<=[.!?][”"’)]?)\s+(?=[A-Z“"(‘'])/); }
+const normS=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function passageHTML(p, opts={}){
+  const paras=p.text.split(/\n\s*\n/);
+  let html='';
+  paras.forEach((pa,pi)=>{
+    let inner;
+    if(opts.select){
+      inner=splitSents(pa).map((s,si)=>`<span class="sent${opts.picked&&normS(opts.picked)===normS(s)?' picked':''}" data-s="${esc(s)}">${esc(s)}</span>`).join(' ');
+    } else inner=esc(pa.replace(/\s+/g,' ').trim());
+    const HL=opts.hl!==undefined?opts.hl:p.highlight;
+    if(HL){ const h=esc(HL.replace(/\s+/g,' ').trim()); if(inner.includes(h)) inner=inner.replace(h,`<mark class="hl">${h}</mark>`); }
+    html+=`<p>${inner}</p>`;
+  });
+  return html;
+}
+
+/* grading */
+function answered(q,a){ if(a==null) return false; if(Array.isArray(a)) return a.some(x=>x); return a!==''; }
+function userLetters(q,a){ if(Array.isArray(a)) return a.filter(Boolean).join(''); return a||''; }
+function isCorrect(q,a){
+  if(!answered(q,a)) return false;
+  if(q.type==='RC_select') return normS(a)===normS(q.answer_sentence) || (normS(a).length>20 && normS(q.answer_sentence).includes(normS(a))) || (normS(q.answer_sentence).length>20 && normS(a).includes(normS(q.answer_sentence)));
+  if(q.type==='TC' && q.blanks>1){ return Array.isArray(a) && a.length===q.blanks && a.every(Boolean) && a.join('')===q.answer; }
+  return [...userLetters(q,a)].sort().join('')===[...q.answer].sort().join('');
+}
+function fmtAns(q,a){ if(!answered(q,a)) return '—'; if(q.type==='RC_select') return '“'+String(a).slice(0,90)+(String(a).length>90?'…':'')+'”'; return userLetters(q,a); }
+function fmtKey(q){ return q.type==='RC_select'? '“'+q.answer_sentence+'”' : q.answer; }
+function estScore(c,n){ const p=c/n; const t=[[0,130],[.15,135],[.3,141],[.45,147],[.55,151],[.65,155],[.75,159],[.85,163],[.93,166],[1,170]]; for(let i=1;i<t.length;i++){ if(p<=t[i][0]){ const [x0,y0]=t[i-1],[x1,y1]=t[i]; return Math.round(y0+(y1-y0)*(p-x0)/(x1-x0)); } } return 170; }
+
+/* state */
+let S=null,tick=null;
+const T=()=>D.tests[S.set-1], secQs=(i=S.sec)=>T().sections[i], curQ=()=>secQs()[S.q];
+function save(){ if(S) store.set(CUR,S); }
+function newState(n){ const pref={timer:$('#optTimer').checked,noBack:$('#optNoBack').checked}; store.set(PREF,pref);
+  return {set:n,sec:0,q:0,ans:{},marked:{},spent:{},left:[...SEC_TIME],timer:pref.timer,noBack:pref.noBack,view:'q',hideTimer:false}; }
+
+function renderHome(){
+  stopTick(); $('#home').classList.remove('hidden'); $('#test').classList.add('hidden'); $('#results').classList.add('hidden');
+  const p=store.get(PREF,{timer:true,noBack:false}); $('#optTimer').checked=p.timer; $('#optNoBack').checked=p.noBack;
+  const hist=store.get(HIST,[]); const cards=$('#cards'); cards.innerHTML='';
+  D.tests.forEach(t=>{
+    const last=hist.filter(h=>h.set===t.set).pop();
+    const c=el('div',{class:'card'},`<h3>Set ${t.set}</h3><div class="meta">27문항 · 41분<br>${esc(t.summary||'')}</div>`+(last?`<div class="last">최근 <b>${last.correct}/27</b> (추정 ${last.est})</div>`:'<div class="last" style="color:var(--muted)">응시 기록 없음</div>'));
+    c.appendChild(el('button',{class:'btn',onclick:()=>startTest(t.set)},'시작하기'));
+    if(last) c.appendChild(el('button',{class:'btn ghost small',onclick:()=>showResults(last)},'최근 결과'));
+    cards.appendChild(c);
+  });
+  const cur=store.get(CUR,null), r=$('#resume');
+  if(cur&&D.tests[cur.set-1]){ r.classList.remove('hidden'); r.innerHTML=`<h2>진행 중인 시험</h2>Set ${cur.set} · Section ${cur.sec+1} · ${cur.q+1}번 `;
+    r.appendChild(el('button',{class:'btn small',onclick:()=>{S=cur;enterTest();}},'이어서 풀기')); r.appendChild(document.createTextNode(' '));
+    r.appendChild(el('button',{class:'btn ghost small',onclick:()=>{store.del(CUR);renderHome();}},'기록 삭제')); } else r.classList.add('hidden');
+  const hb=$('#histBox');
+  if(hist.length){ hb.innerHTML='<h2 style="font-size:16px">응시 기록</h2>'; const tb=el('table'); tb.innerHTML='<thead><tr><th>날짜</th><th>세트</th><th>S1</th><th>S2</th><th>합계</th><th>추정</th><th></th></tr></thead>'; const b=el('tbody');
+    hist.slice().reverse().forEach(h=>{ const tr=el('tr',{},`<td>${new Date(h.date).toLocaleString()}</td><td>Set ${h.set}</td><td>${h.secCorrect[0]}/12</td><td>${h.secCorrect[1]}/15</td><td><b>${h.correct}/27</b></td><td>${h.est}</td>`); const td=el('td'); td.appendChild(el('button',{class:'btn ghost small',onclick:()=>showResults(h)},'결과')); tr.appendChild(td); b.appendChild(tr); });
+    tb.appendChild(b); hb.appendChild(tb); } else hb.innerHTML='';
+}
+function startTest(n){ if(store.get(CUR,null)){ confirmBox('진행 중인 시험 기록이 삭제됩니다. 새로 시작할까요?',()=>{S=newState(n);save();enterTest();}); return; } S=newState(n); save(); enterTest(); }
+function enterTest(){ $('#home').classList.add('hidden'); $('#results').classList.add('hidden'); $('#test').classList.remove('hidden'); S.view='q'; render(); startTick(); }
+function startTick(){ stopTick(); let last=Date.now(); tick=setInterval(()=>{ const now=Date.now(),dt=(now-last)/1000; last=now; if(!S) return;
+  S.left[S.sec]=Math.max(0,S.left[S.sec]-dt); if(S.view==='q'){ const id=curQ().id; S.spent[id]=(S.spent[id]||0)+dt; } updTimer();
+  if(S.timer&&S.left[S.sec]<=0) timeUp(); save(); },500); }
+function stopTick(){ if(tick) clearInterval(tick); tick=null; }
+const fmtT=s=>{s=Math.max(0,Math.round(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
+function updTimer(){ const t=$('#tTimer'),left=S.left[S.sec]; t.textContent=S.hideTimer?'':(S.timer?'남은 시간 '+fmtT(left):'경과 '+fmtT(SEC_TIME[S.sec]-left)+' (타이머 끔)'); t.classList.toggle('low',S.timer&&left<=180); $('#bHideTimer').textContent=S.hideTimer?'시간 보기':'시간 숨기기'; }
+function timeUp(){ stopTick(); if(S.sec===0) msgBox('Section 1 시간이 종료되었습니다. Section 2로 넘어갑니다.',()=>{goSection(1);startTick();}); else msgBox('Section 2 시간이 종료되었습니다.',finish); }
+function goSection(i){ S.sec=i; S.q=0; S.view='q'; render(); save(); }
+
+function render(){
+  const qs=secQs(), q=curQ();
+  $('#tTitle').textContent=`GRE Verbal Reasoning — Set ${S.set}`; $('#tSec').textContent=`Section ${S.sec+1} of 2`;
+  $('#tPos').textContent=S.view==='review'?'Review':`Question ${S.q+1} of ${qs.length}`;
+  $('#tMarked').classList.toggle('hidden',S.view!=='q'||!S.marked[q.id]); $('#bMark').classList.toggle('on',!!S.marked[q.id]); $('#bMark').disabled=S.view!=='q';
+  $('#bReview').classList.toggle('on',S.view==='review');
+  $('#bBack').disabled=S.view==='q'&&S.q===0&&(S.sec===0||S.noBack);
+  $('#bNext').textContent=S.view==='review'?'Return':(S.q===qs.length-1?(S.sec===0?'Next Section':'Finish'):'Next');
+  updTimer();
+  const st=$('#stage'); st.innerHTML=''; st.scrollTop=0;
+  if(S.view==='review'){ st.appendChild(renderReview()); return; }
+  const p=q.pid?P[q.pid]:null;
+  const wrap=el('div',{class:'qwrap'+(p?' split':'')});
+  if(p){
+    const grp=qs.filter(x=>x.pid===q.pid); const i0=qs.indexOf(grp[0]);
+    const pp=el('div',{class:'pane passage'},`<div class="grp">${grp.length>1?`Questions ${i0+1} to ${i0+grp.length} are based on the following passage.`:`Question ${i0+1} is based on the following passage.`}</div>`);
+    const tx=el('div',{class:'ptext serif'+(q.type==='RC_select'?' selmode':'')}); tx.innerHTML=passageHTML(p,{select:q.type==='RC_select',picked:S.ans[q.id],hl:q.q_highlight||p.highlight});
+    if(q.type==='RC_select') tx.querySelectorAll('.sent').forEach(s=>s.addEventListener('click',()=>{ S.ans[q.id]=(S.ans[q.id]===s.dataset.s?'':s.dataset.s); save(); render(); }));
+    pp.appendChild(tx); wrap.appendChild(pp);
+  }
+  const qp=el('div',{class:'pane'});
+  const dk=q.type==='TC'?(q.blanks>1?'TCn':'TC1'):q.type;
+  qp.appendChild(el('div',{class:'dirs'},DIRS[dk]));
+  qp.appendChild(el('div',{class:'stem serif'},esc(q.stem)));
+  qp.appendChild(answerUI(q));
+  wrap.appendChild(qp); st.appendChild(wrap);
+}
+function answerUI(q){
+  const a=S.ans[q.id];
+  if(q.type==='TC'&&q.blanks>1){
+    const cur=Array.isArray(a)?a.slice():Array(q.blanks).fill('');
+    const box=el('div',{class:'cols',style:`grid-template-columns:repeat(${q.blanks},1fr)`});
+    q.columns.forEach((col,ci)=>{
+      const c=el('div',{class:'col'}); c.appendChild(el('h4',{},`Blank (${['i','ii','iii'][ci]})`));
+      col.forEach((txt,oi)=>{ const L=String.fromCharCode(65+ci*3+oi);
+        const o=el('div',{class:'opt serif'+(cur[ci]===L?' sel':'')},esc(txt));
+        o.addEventListener('click',()=>{ cur[ci]=cur[ci]===L?'':L; S.ans[q.id]=cur; save(); render(); }); c.appendChild(o); });
+      box.appendChild(c); });
+    return box;
+  }
+  if(q.type==='RC_select'){ return el('div',{class:'hint'}, a?`선택한 문장: “${esc(String(a).slice(0,120))}${String(a).length>120?'…':''}” (다시 클릭하면 해제)`:'왼쪽 지문에서 문장을 클릭하세요.'); }
+  const multi=q.type==='SE'||q.type==='RC_multi';
+  const box=el('div',{class:'choices'});
+  q.choices.forEach((txt,i)=>{ const L=String.fromCharCode(65+i);
+    const sel=multi?(a||'').includes(L):a===L;
+    const c=el('div',{class:'choice'+(sel?' sel':'')},`<span class="mark ${multi?'sq':'oval'}">${sel&&multi?'✓':L}</span><span class="serif" style="font-size:15.5px">${esc(txt)}</span>`);
+    c.addEventListener('click',()=>{ if(multi){ const s=new Set((a||'').split('').filter(Boolean)); s.has(L)?s.delete(L):s.add(L); S.ans[q.id]=[...s].sort().join(''); } else S.ans[q.id]=a===L?'':L; save(); render(); });
+    box.appendChild(c); });
+  const w=el('div'); w.appendChild(box);
+  if(q.type==='SE') w.appendChild(el('div',{class:'hint',style:'margin-top:8px'},`두 개를 고르세요. (현재 ${(a||'').length}개 선택)`));
+  return w;
+}
+function renderReview(){
+  const qs=secQs(), box=el('div',{class:'review'});
+  box.innerHTML=`<h3 style="margin:0 0 8px">Section ${S.sec+1} Review</h3>`;
+  const t=el('table'); t.innerHTML='<thead><tr><th>문항</th><th>상태</th><th>Marked</th><th>유형</th></tr></thead>'; const b=el('tbody');
+  qs.forEach((q,i)=>{ const ok=answered(q,S.ans[q.id]); const tr=el('tr',{class:i===S.q?'cur':''},`<td>Question ${i+1}</td><td class="${ok?'':'na'}">${ok?'Answered':'Not Answered'}</td><td>${S.marked[q.id]?'★':''}</td><td>${TK(q)}</td>`); tr.addEventListener('click',()=>{S.q=i;S.view='q';save();render();}); b.appendChild(tr); });
+  t.appendChild(b); box.appendChild(t); return box;
+}
+$('#bNext').addEventListener('click',()=>{
+  if(S.view==='review'){ S.view='q'; render(); return; }
+  const qs=secQs(); if(S.q<qs.length-1){ S.q++; save(); render(); return; }
+  const na=qs.filter(q=>!answered(q,S.ans[q.id])).length;
+  if(S.sec===0) confirmBox(`Section 1을 종료하고 Section 2로 넘어갈까요?${na?`<br><b style="color:var(--bad)">미응답 ${na}문항</b>`:''}`,()=>goSection(1),'Section 2 시작');
+  else confirmBox(`시험을 종료하고 채점할까요?${na?`<br><b style="color:var(--bad)">미응답 ${na}문항</b>`:''}`,finish,'채점하기');
+});
+$('#bBack').addEventListener('click',()=>{ if(S.view==='review'){S.view='q';render();return;} if(S.q>0){S.q--;save();render();return;} if(S.sec===1&&!S.noBack){S.sec=0;S.q=secQs().length-1;save();render();} });
+$('#bMark').addEventListener('click',()=>{ const id=curQ().id; S.marked[id]=!S.marked[id]; save(); render(); });
+$('#bReview').addEventListener('click',()=>{ S.view=S.view==='review'?'q':'review'; render(); });
+$('#bQuit').addEventListener('click',()=>confirmBox('시험을 중단할까요? 진행 상황은 저장됩니다.',()=>{stopTick();save();renderHome();},'저장 후 나가기',[['지금 채점',finish]]));
+$('#bHideTimer').addEventListener('click',()=>{ S.hideTimer=!S.hideTimer; updTimer(); save(); });
+function confirmBox(html,onOk,okLabel='확인',extra=[]){ const m=$('#modal'),b=$('#modalBox'); b.innerHTML=`<div>${html}</div>`; const row=el('div',{class:'row'});
+  row.appendChild(el('button',{class:'btn ghost',onclick:()=>m.classList.add('hidden')},'취소'));
+  extra.forEach(([l,f])=>row.appendChild(el('button',{class:'btn ghost',onclick:()=>{m.classList.add('hidden');f();}},l)));
+  row.appendChild(el('button',{class:'btn',onclick:()=>{m.classList.add('hidden');onOk();}},okLabel)); b.appendChild(row); m.classList.remove('hidden'); }
+function msgBox(html,onOk){ const m=$('#modal'),b=$('#modalBox'); b.innerHTML=`<div>${html}</div>`; const row=el('div',{class:'row'}); row.appendChild(el('button',{class:'btn',onclick:()=>{m.classList.add('hidden');onOk&&onOk();}},'확인')); b.appendChild(row); m.classList.remove('hidden'); }
+
+/* finish & results */
+function finish(){
+  stopTick(); let correct=0; const secCorrect=[0,0], items=[];
+  T().sections.forEach((sec,si)=>sec.forEach((q,qi)=>{ const a=S.ans[q.id]??null, ok=isCorrect(q,a); if(ok){correct++;secCorrect[si]++;}
+    items.push({id:q.id,sec:si,qn:qi+1,ans:a,ok,spent:Math.round(S.spent[q.id]||0),marked:!!S.marked[q.id]}); }));
+  const rec={set:S.set,date:Date.now(),correct,secCorrect,est:estScore(correct,27),items,time:[Math.round(SEC_TIME[0]-S.left[0]),Math.round(SEC_TIME[1]-S.left[1])],timer:S.timer};
+  const h=store.get(HIST,[]); h.push(rec); store.set(HIST,h); store.del(CUR); S=null; showResults(rec);
+}
+function qView(q,ans){
+  const v=el('div',{class:'qview'});
+  if(q.pid&&P[q.pid]){ const pt=el('div',{class:'ptext serif'}); pt.innerHTML=passageHTML(P[q.pid],{hl:q.q_highlight||P[q.pid].highlight}); v.appendChild(pt); }
+  v.appendChild(el('div',{class:'stem serif',style:'font-size:15px'},esc(q.stem)));
+  const cl=el('div',{class:'clist serif',style:'font-size:14.5px'});
+  const mine=q.type==='RC_select'?'':userLetters(q,ans);
+  if(q.type==='TC'&&q.blanks>1){ q.columns.forEach((col,ci)=>{ cl.appendChild(el('div',{style:'font-weight:700;margin-top:4px'},`Blank (${['i','ii','iii'][ci]})`)); col.forEach((t,oi)=>{ const L=String.fromCharCode(65+ci*3+oi); cl.appendChild(el('div',{class:(q.answer.includes(L)?'right ':'')+(mine.includes(L)&&!q.answer.includes(L)?'mine':'')},`${L}. ${esc(t)}`)); }); }); }
+  else if(q.choices){ q.choices.forEach((t,i)=>{ const L=String.fromCharCode(65+i); cl.appendChild(el('div',{class:(q.answer.includes(L)?'right ':'')+(mine.includes(L)&&!q.answer.includes(L)?'mine':'')},`${L}. ${esc(t)}`)); }); }
+  v.appendChild(cl); return v;
+}
+/* ---------- my wrong-answer notes: why I missed it (saved in this browser, included in 결과 내보내기) ---------- */
+const NOTES='grev_notes_v1';
+const NOTE_CATS=['단어 뜻 모름','문맥 근거 놓침','선지 함정','논리 방향(역접·인과) 착각','지문 범위 밖 추론','시간 부족'];
+const myNotes=store.get(NOTES,{});
+const hasNote=id=>!!myNotes[id];
+function noteBlock(q){
+  const n=myNotes[q.id]?{cats:[...(myNotes[q.id].cats||[])],text:myNotes[q.id].text||''}:{cats:[],text:''};
+  const box=el('div',{class:'mynote'},'<div class="exlab">✍️ 내 오답 메모 — 왜 틀렸나 · 다음엔 어떻게</div>');
+  const chips=el('div',{class:'ncats'}), st=el('span',{class:'hint nsaved'});
+  const ta=el('textarea',{class:'ntext',placeholder:'예) although 뒤 역접을 놓쳐 긍정 단어를 고름 → 다음엔 시그널 단어(although, yet)에 먼저 표시'}); ta.value=n.text;
+  const saveN=()=>{ n.text=ta.value; if(!n.text.trim() && !n.cats.length) delete myNotes[q.id]; else myNotes[q.id]={cats:n.cats,text:n.text,at:Date.now()};
+    store.set(NOTES,myNotes); st.textContent='저장됨 ✓'; clearTimeout(st._t); st._t=setTimeout(()=>st.textContent='',1500); };
+  NOTE_CATS.forEach(c=>{ const b=el('button',{class:'ncat'+(n.cats.includes(c)?' on':''),type:'button'},c);
+    b.addEventListener('click',e=>{ e.stopPropagation(); const i=n.cats.indexOf(c); if(i>=0) n.cats.splice(i,1); else n.cats.push(c); b.classList.toggle('on'); saveN(); }); chips.appendChild(b); });
+  let tm; ta.addEventListener('input',()=>{ clearTimeout(tm); tm=setTimeout(saveN,400); });
+  ta.addEventListener('click',e=>e.stopPropagation());
+  box.append(chips,ta,st); return box;
+}
+function explBlock(q){
+  const g=el('div',{class:'exgrid'});
+  if(q.note){ const n=el('div',{class:'trap',style:'background:#fdf3e1;border-color:#f0d9a8'}); n.innerHTML='<div class="exlab" style="color:#8a5a00">정답 관련 메모</div>'+esc(q.note); g.appendChild(n); }
+  const e=el('div',{class:'expl'}); e.innerHTML='<div class="exlab">해설</div>'+esc(q.explanation||'해설 준비 중'); g.appendChild(e);
+  if(q.trap){ const t=el('div',{class:'trap'}); t.innerHTML='<div class="exlab">⚠ 함정 / 오답 포인트</div>'+esc(q.trap); g.appendChild(t); }
+  const gl=Object.entries(q.glosses||{}); if(gl.length){ const v=el('div',{class:'vocab'}); v.innerHTML='<div class="exlab">단어</div>'+gl.map(([w,m])=>`<b>${esc(w)}</b> ${esc(m)}`).join(' · '); g.appendChild(v); }
+  return g;
+}
+function itemCard(q,it,head){
+  const ans=answered(q,it.ans), cls=it.ok?'ok':(ans?'bad':'skip');
+  const card=el('div',{class:'item '+cls});
+  const hd=el('div',{class:'ih'},`<span class="n">${head}</span><span class="tag ${cls}">${it.ok?'정답':(ans?'오답':'미응답')}</span><span class="tag">${TK(q)}</span>${q.difficulty?`<span class="tag">난이도 ${'●'.repeat(q.difficulty)}${'○'.repeat(5-q.difficulty)}</span>`:''}${it.spent!=null?`<span class="tag">${it.spent}초</span>`:''}${it.marked?'<span class="tag">★</span>':''}${hasNote(q.id)?'<span class="tag" style="background:#efe9fb">✍️ '+esc((myNotes[q.id].cats||[]).join('·')||'메모')+'</span>':''}<span class="hint" style="margin-left:auto">${esc(q.src||'')}</span>`);
+  const body=el('div',{class:'ib hidden'}); body.innerHTML=`<div class="ansline">내 답: <b>${esc(fmtAns(q,it.ans))}</b> · 정답: <b>${esc(fmtKey(q))}</b></div>`;
+  body.appendChild(qView(q,it.ans)); body.appendChild(explBlock(q)); if(!it.ok||it.marked) body.appendChild(noteBlock(q));
+  hd.addEventListener('click',()=>body.classList.toggle('hidden')); card.append(hd,body); return card;
+}
+function showResults(rec){
+  $('#home').classList.add('hidden'); $('#test').classList.add('hidden'); const R=$('#results'); R.classList.remove('hidden'); R.innerHTML=''; window.scrollTo(0,0);
+  const qmap={}; D.tests[rec.set-1].sections.forEach(s=>s.forEach(q=>qmap[q.id]=q));
+  R.appendChild(el('div',{class:'toolbar'})).append(el('button',{class:'btn ghost small',onclick:renderHome},'← 홈'),el('button',{class:'btn ghost small',onclick:()=>startTest(rec.set)},'다시 풀기'));
+  R.appendChild(el('h1',{},`Set ${rec.set} 결과`));
+  const g=el('div',{class:'sumgrid'}); g.innerHTML=`<div class="stat"><div class="k">총 정답</div><div class="v">${rec.correct} / 27</div></div><div class="stat"><div class="k">Section 1</div><div class="v">${rec.secCorrect[0]} / 12</div><div class="s">소요 ${fmtT(rec.time[0])} / 18:00</div></div><div class="stat"><div class="k">Section 2</div><div class="v">${rec.secCorrect[1]} / 15</div><div class="s">소요 ${fmtT(rec.time[1])} / 23:00</div></div><div class="stat"><div class="k">추정 점수 (참고용)</div><div class="v">${rec.est}</div><div class="s">ETS 공식 환산 아님</div></div>`; R.appendChild(g);
+  const agg=f=>{const m={}; rec.items.forEach(it=>{const k=f(qmap[it.id]); (m[k]=m[k]||{c:0,n:0}); m[k].n++; if(it.ok) m[k].c++;}); return m;};
+  const bars=(title,m)=>{ const b=el('div',{class:'bars'},`<h3>${title}</h3>`); Object.entries(m).sort((a,b)=>b[1].n-a[1].n).forEach(([k,v])=>b.appendChild(el('div',{class:'brow'},`<span>${esc(k)}</span><div class="btrack"><div class="bfill" style="width:${v.c/v.n*100}%"></div></div><span>${v.c}/${v.n}</span>`))); return b; };
+  const two=el('div',{style:'display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px'});
+  two.appendChild(bars('유형별 정답률',agg(TK))); two.appendChild(bars('섹션별',agg(q=>rec.items.find(i=>i.id===q.id).sec===0?'Section 1':'Section 2 (고난도)')));
+  R.appendChild(two);
+  const f=el('div',{class:'filters'}); let mode='all'; const list=el('div');
+  [['전체','all'],['틀린 문제','bad'],['미응답','skip'],['Marked','marked']].forEach(([l,m])=>{ const b=el('button',{class:'btn ghost small'},l); b.addEventListener('click',()=>{mode=m;draw();}); f.appendChild(b); });
+  R.append(f,list);
+  function draw(){ list.innerHTML=''; rec.items.forEach(it=>{ const q=qmap[it.id], ans=answered(q,it.ans);
+    if(mode==='bad'&&it.ok) return; if(mode==='skip'&&ans) return; if(mode==='marked'&&!it.marked) return;
+    list.appendChild(itemCard(q,it,`S${it.sec+1}-${it.qn}`)); }); }
+  draw();
+}
+function showWrong(){
+  $('#home').classList.add('hidden'); const R=$('#results'); R.classList.remove('hidden'); R.innerHTML='';
+  const qmap={}; D.tests.forEach(t=>t.sections.forEach(s=>s.forEach(q=>qmap[q.id]={...q,set:t.set})));
+  const last={}; store.get(HIST,[]).forEach(h=>h.items.forEach(it=>last[it.id]={...it,set:h.set}));
+  const wrong=Object.values(last).filter(it=>!it.ok&&qmap[it.id]);
+  R.appendChild(el('div',{class:'toolbar'})).append(el('button',{class:'btn ghost small',onclick:renderHome},'← 홈'));
+  R.appendChild(el('h1',{},`오답 노트 (${wrong.length})`));
+  const f=el('div',{class:'filters'}); const list=el('div'); let sel='전체';
+  const cnt={}; wrong.forEach(it=>{const k=TK(qmap[it.id]); cnt[k]=(cnt[k]||0)+1;});
+  ['전체',...Object.keys(cnt)].forEach(k=>{ const b=el('button',{class:'btn ghost small'},k==='전체'?'전체':`${k} (${cnt[k]})`); b.addEventListener('click',()=>{sel=k;draw();}); f.appendChild(b); });
+  const ncnt={}; wrong.forEach(it=>(myNotes[it.id]?.cats||[]).forEach(c=>ncnt[c]=(ncnt[c]||0)+1));
+  [['✍️ 메모 안 쓴 문제',wrong.filter(it=>!hasNote(it.id)).length],...Object.entries(ncnt).map(([c,n])=>['✍️ '+c,n])].forEach(([k,n])=>{ const b=el('button',{class:'btn ghost small'},`${k} (${n})`); b.addEventListener('click',()=>{sel=k;draw();}); f.appendChild(b); });
+  R.append(f,list);
+  function draw(){ list.innerHTML=''; wrong.filter(it=>sel==='전체'||(sel==='✍️ 메모 안 쓴 문제'?!hasNote(it.id):sel.startsWith('✍️ ')?(myNotes[it.id]&&(myNotes[it.id].cats||[]).includes(sel.slice(3))):TK(qmap[it.id])===sel)).forEach(it=>list.appendChild(itemCard(qmap[it.id],it,`Set ${it.set} · S${it.sec+1}-${it.qn}`))); if(!list.children.length) list.appendChild(el('p',{class:'hint'},'오답이 없습니다.')); }
+  draw();
+}
+$('#bWrong').addEventListener('click',showWrong);
+$('#bExport').addEventListener('click',()=>{
+  const hist=store.get(HIST,[]); if(!hist.length){ msgBox('저장된 응시 기록이 없습니다.'); return; }
+  const qmap={}; D.tests.forEach(t=>t.sections.forEach((s,si)=>s.forEach((q,qi)=>qmap[q.id]={set:t.set,sec:si+1,qn:qi+1,type:TK(q),src:q.src,answer:q.type==='RC_select'?q.answer_sentence:q.answer,difficulty:q.difficulty})));
+  const out={exported:new Date().toISOString(),attempts:hist.map(h=>({set:h.set,date:new Date(h.date).toISOString(),correct:h.correct,secCorrect:h.secCorrect,time:h.time,items:h.items.map(it=>({...qmap[it.id],id:it.id,my:Array.isArray(it.ans)?it.ans.join(''):it.ans,ok:it.ok,spent:it.spent,marked:it.marked,note:myNotes[it.id]||null}))})),notes:myNotes};
+  const a=document.createElement('a'); const d=new Date(); a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,1)],{type:'application/json'}));
+  a.download=`GRE_verbal_results_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`; document.body.appendChild(a); a.click(); a.remove();
+  msgBox(`응시 기록 ${hist.length}회를 저장했습니다: <b>${a.download}</b>`);
+});
+window.addEventListener('beforeunload',save);
+renderHome();
+})();
+</script>
+</body>
+</html>

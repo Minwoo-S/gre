@@ -1,0 +1,18 @@
+{
+  "name": "GRE 10일 완성 — 단어·라이팅·모의고사",
+  "short_name": "GRE 10일",
+  "description": "11/15 GRE 시험 대비 강쌤·거만어·모의어휘·라이팅 올인원 오프라인 앱",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
