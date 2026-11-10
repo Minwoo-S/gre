@@ -1901,116 +1901,6 @@ function renderWritingTab(view) {
         ${step < 4 ? `<button class="btn ghost" id="btnNextStep" style="padding:12px">다음 단계 (Step ${step+1})로 이동 →</button>` : `<button class="btn ghost" id="btnNextDrillBot" style="padding:12px">다음 암기 항목으로 이동 →</button>`}
       </div>
     </div>`;
-  } else 
-
-  if (pref.wSubTab === 'drill') {
-    const curDrill = W_DRILLS.find(d => d.id === pref.wDrillId) || W_DRILLS[0];
-    const curIdx = W_DRILLS.findIndex(d => d.id === curDrill.id);
-    const step = Number(pref.wDrillStep) || 1;
-
-    $('#selWDrill')?.addEventListener('change', e => { pref.wDrillId = e.target.value; pref.wDrillStep = 1; savePref(); render(); });
-    $('#btnPrevDrill')?.addEventListener('click', () => {
-      const ni = (curIdx - 1 + W_DRILLS.length) % W_DRILLS.length;
-      pref.wDrillId = W_DRILLS[ni].id; pref.wDrillStep = 1; savePref(); render();
-    });
-    $('#btnNextDrill')?.addEventListener('click', () => {
-      const ni = (curIdx + 1) % W_DRILLS.length;
-      pref.wDrillId = W_DRILLS[ni].id; pref.wDrillStep = 1; savePref(); render();
-    });
-    $('#btnNextDrillBot')?.addEventListener('click', () => {
-      const ni = (curIdx + 1) % W_DRILLS.length;
-      pref.wDrillId = W_DRILLS[ni].id; pref.wDrillStep = 1; savePref(); render(); window.scrollTo(0,0);
-    });
-    $('#btnNextStep')?.addEventListener('click', () => {
-      pref.wDrillStep = Math.min(4, step + 1); savePref(); render(); window.scrollTo(0,0);
-    });
-    view.querySelectorAll('[data-dstep]').forEach(b => {
-      b.addEventListener('click', () => { pref.wDrillStep = Number(b.dataset.dstep); savePref(); render(); });
-    });
-    view.querySelectorAll('.drill-peek-btn').forEach(b => {
-      b.addEventListener('click', () => {
-        const pk = view.querySelector('#peek_' + b.dataset.sidx);
-        if (pk) pk.classList.toggle('hidden');
-      });
-    });
-
-    function gradeCurrentDrill() {
-      let totalItems = 0, correctItems = 0;
-      if (step === 1 || step === 4) {
-        view.querySelectorAll('.drill-full-inp').forEach(inp => {
-          const sIdx = Number(inp.dataset.sidx);
-          const s = curDrill.sentences[sIdx];
-          const res = diffDrillText(s.en, inp.value);
-          totalItems += res.total;
-          correctItems += res.matched;
-          const fb = view.querySelector(`[data-fb="${sIdx}"]`);
-          if (fb) {
-            fb.innerHTML = `<div style="margin-top:4px;padding:7px 10px;border-radius:8px;background:var(--panel);border:1px solid ${res.pct>=90?'#22c55e':'#f59e0b'}">
-              <b>정확도 ${res.pct}% (${res.matched}/${res.total}단어)</b>: ${res.html}
-            </div>`;
-          }
-          inp.style.borderColor = res.pct >= 90 ? '#22c55e' : '#ef4444';
-        });
-      } else {
-        curDrill.sentences.forEach((s, sIdx) => {
-          const inps = [...view.querySelectorAll(`.drill-blank-inp[data-sidx="${sIdx}"]`)];
-          let sOk = 0;
-          const wrongList = [];
-          inps.forEach(inp => {
-            totalItems++;
-            const ans = inp.dataset.ans;
-            const uNorm = normDrillWords(inp.value).join(' ');
-            const aNorm = normDrillWords(ans).join(' ');
-            if (uNorm === aNorm && aNorm.length > 0) {
-              correctItems++;
-              sOk++;
-              inp.style.borderColor = '#22c55e';
-              inp.style.background = 'var(--ok-bg)';
-            } else {
-              inp.style.borderColor = '#ef4444';
-              inp.style.background = 'var(--bad-bg)';
-              wrongList.push(`<code>${esc(inp.value || '(빈칸)')}</code> → <b style="color:var(--brand)">${esc(ans)}</b>`);
-            }
-          });
-          const fb = view.querySelector(`[data-fb="${sIdx}"]`);
-          if (fb) {
-            fb.innerHTML = wrongList.length === 0
-              ? `<span style="color:var(--ok);font-weight:800">✓ 문장 ${sIdx+1} 빈칸 모두 정답!</span>`
-              : `<span style="color:var(--bad);font-weight:700">오답/오타 교정:</span> ${wrongList.join(' | ')}`;
-          }
-        });
-      }
-      const totalPct = totalItems ? Math.round((correctItems / totalItems) * 100) : 0;
-      const banner = $('#drillResultBanner');
-      if (banner) {
-        banner.classList.remove('hidden');
-        const passed = totalPct >= 90;
-        if (passed) {
-          wDrillProg[curDrill.id] = wDrillProg[curDrill.id] || {};
-          wDrillProg[curDrill.id][step] = true;
-          saveJSON(SK_WDRILL, wDrillProg);
-        }
-        banner.innerHTML = `<div style="padding:11px 14px;border-radius:10px;background:${passed?'var(--ok-bg)':'var(--warn-bg)'};color:${passed?'var(--ok)':'var(--warn)'};font-weight:800;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-          <span>${passed ? `🎉 훌륭합니다! 전체 정확도 ${totalPct}% — Step ${step} 통과!` : `🔥 현재 정확도 ${totalPct}% — 아래 빨간색 표시된 오타·누락 단어를 확인하고 다시 쳐보세요!`}</span>
-          ${passed && step < 4 ? `<button type="button" class="btn sm" id="btnBannerNextStep">Step ${step+1}로 바로 진급 →</button>` : ''}
-        </div>`;
-        $('#btnBannerNextStep')?.addEventListener('click', () => {
-          pref.wDrillStep = Math.min(4, step + 1); savePref(); render(); window.scrollTo(0,0);
-        });
-      }
-    }
-
-    $('#btnGradeDrill')?.addEventListener('click', gradeCurrentDrill);
-    $('#btnGradeDrillBot')?.addEventListener('click', gradeCurrentDrill);
-    view.querySelectorAll('.drill-full-inp, .drill-blank-inp').forEach((inp, idx, arr) => {
-      inp.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          if (idx < arr.length - 1) arr[idx + 1].focus();
-          else gradeCurrentDrill();
-        }
-      });
-    });
   } else if (pref.wSubTab === 'pool') {
     const cats = [...new Set(M.issues.map(x => x.category))];
     const types = [...new Set(M.issues.map(x => x.task_type))];
@@ -2233,7 +2123,120 @@ function renderWritingTab(view) {
     b.addEventListener('click', () => { pref.wSubTab = b.dataset.wtab; savePref(); render(); });
   });
 
-  if (pref.wSubTab === 'pool') {
+  if (pref.wSubTab === 'drill') {
+    const curDrill = W_DRILLS.find(d => d.id === pref.wDrillId) || W_DRILLS[0];
+    const curIdx = W_DRILLS.findIndex(d => d.id === curDrill.id);
+    const step = Number(pref.wDrillStep) || 1;
+
+    $('#selWDrill')?.addEventListener('change', e => { pref.wDrillId = e.target.value; pref.wDrillStep = 1; savePref(); render(); });
+    $('#btnPrevDrill')?.addEventListener('click', () => {
+      const ni = (curIdx - 1 + W_DRILLS.length) % W_DRILLS.length;
+      pref.wDrillId = W_DRILLS[ni].id; pref.wDrillStep = 1; savePref(); render();
+    });
+    $('#btnNextDrill')?.addEventListener('click', () => {
+      const ni = (curIdx + 1) % W_DRILLS.length;
+      pref.wDrillId = W_DRILLS[ni].id; pref.wDrillStep = 1; savePref(); render();
+    });
+    $('#btnNextDrillBot')?.addEventListener('click', () => {
+      const ni = (curIdx + 1) % W_DRILLS.length;
+      pref.wDrillId = W_DRILLS[ni].id; pref.wDrillStep = 1; savePref(); render(); window.scrollTo(0,0);
+    });
+    $('#btnNextStep')?.addEventListener('click', () => {
+      pref.wDrillStep = Math.min(4, step + 1); savePref(); render(); window.scrollTo(0,0);
+    });
+    view.querySelectorAll('[data-dstep]').forEach(b => {
+      b.addEventListener('click', () => { pref.wDrillStep = Number(b.dataset.dstep); savePref(); render(); });
+    });
+    view.querySelectorAll('.drill-peek-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        const pk = view.querySelector('#peek_' + b.dataset.sidx);
+        if (pk) pk.classList.toggle('hidden');
+      });
+    });
+
+    function gradeCurrentDrill() {
+      let totalItems = 0, correctItems = 0;
+      if (step === 1 || step === 4) {
+        view.querySelectorAll('.drill-full-inp').forEach(inp => {
+          const sIdx = Number(inp.dataset.sidx);
+          const s = curDrill.sentences[sIdx];
+          const res = diffDrillText(s.en, inp.value);
+          totalItems += res.total;
+          correctItems += res.matched;
+          const fb = view.querySelector(`[data-fb="${sIdx}"]`);
+          if (fb) {
+            fb.innerHTML = `<div style="margin-top:4px;padding:7px 10px;border-radius:8px;background:var(--panel);border:1px solid ${res.pct>=90?'#22c55e':'#f59e0b'}">
+              <b>정확도 ${res.pct}% (${res.matched}/${res.total}단어)</b>: ${res.html}
+            </div>`;
+          }
+          inp.style.borderColor = res.pct >= 90 ? '#22c55e' : '#ef4444';
+        });
+      } else {
+        curDrill.sentences.forEach((s, sIdx) => {
+          const inps = [...view.querySelectorAll(`.drill-blank-inp[data-sidx="${sIdx}"]`)];
+          let sOk = 0;
+          const wrongList = [];
+          inps.forEach(inp => {
+            totalItems++;
+            const ans = inp.dataset.ans;
+            const uNorm = normDrillWords(inp.value).join(' ');
+            const aNorm = normDrillWords(ans).join(' ');
+            if (uNorm === aNorm && aNorm.length > 0) {
+              correctItems++;
+              sOk++;
+              inp.style.borderColor = '#22c55e';
+              inp.style.background = 'var(--ok-bg)';
+            } else {
+              inp.style.borderColor = '#ef4444';
+              inp.style.background = 'var(--bad-bg)';
+              wrongList.push(`<code>${esc(inp.value || '(빈칸)')}</code> → <b style="color:var(--brand)">${esc(ans)}</b>`);
+            }
+          });
+          const fb = view.querySelector(`[data-fb="${sIdx}"]`);
+          if (fb) {
+            fb.innerHTML = wrongList.length === 0
+              ? `<span style="color:var(--ok);font-weight:800">✓ 문장 ${sIdx+1} 빈칸 모두 정답!</span>`
+              : `<span style="color:var(--bad);font-weight:700">오답/오타 교정:</span> ${wrongList.join(' | ')}`;
+          }
+        });
+      }
+      const totalPct = totalItems ? Math.round((correctItems / totalItems) * 100) : 0;
+      const banner = $('#drillResultBanner');
+      if (banner) {
+        banner.classList.remove('hidden');
+        const passed = totalPct >= 90;
+        if (passed) {
+          wDrillProg[curDrill.id] = wDrillProg[curDrill.id] || {};
+          wDrillProg[curDrill.id][step] = true;
+          saveJSON(SK_WDRILL, wDrillProg);
+        }
+        banner.innerHTML = `<div style="padding:11px 14px;border-radius:10px;background:${passed?'var(--ok-bg)':'var(--warn-bg)'};color:${passed?'var(--ok)':'var(--warn)'};font-weight:800;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span>${passed ? `🎉 훌륭합니다! 전체 정확도 ${totalPct}% — Step ${step} 통과!` : `🔥 현재 정확도 ${totalPct}% — 아래 빨간색 표시된 오타·누락 단어를 확인하고 다시 쳐보세요!`}</span>
+          ${passed && step < 4 ? `<button type="button" class="btn sm" id="btnBannerNextStep">Step ${step+1}로 바로 진급 →</button>` : ''}
+          ${passed && step === 4 ? `<button type="button" class="btn sm" id="btnBannerNextDrill">다음 암기 코스로 이동 →</button>` : ''}
+        </div>`;
+        $('#btnBannerNextStep')?.addEventListener('click', () => {
+          pref.wDrillStep = Math.min(4, step + 1); savePref(); render(); window.scrollTo(0,0);
+        });
+        $('#btnBannerNextDrill')?.addEventListener('click', () => {
+          const ni = (curIdx + 1) % W_DRILLS.length;
+          pref.wDrillId = W_DRILLS[ni].id; pref.wDrillStep = 1; savePref(); render(); window.scrollTo(0,0);
+        });
+      }
+    }
+
+    $('#btnGradeDrill')?.addEventListener('click', gradeCurrentDrill);
+    $('#btnGradeDrillBot')?.addEventListener('click', gradeCurrentDrill);
+    view.querySelectorAll('.drill-full-inp, .drill-blank-inp').forEach((inp, idx, arr) => {
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (idx < arr.length - 1) arr[idx + 1].focus();
+          else gradeCurrentDrill();
+        }
+      });
+    });
+  } else if (pref.wSubTab === 'pool') {
     $('#wSelCat').addEventListener('change', e => { pref.wCat = e.target.value; savePref(); render(); });
     $('#wSelType').addEventListener('change', e => { pref.wType = e.target.value; savePref(); render(); });
     $('#wSelIssue').addEventListener('change', e => { pref.activeIssue = Number(e.target.value); savePref(); render(); });
