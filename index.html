@@ -1804,7 +1804,8 @@ function renderWritingTab(view) {
   let html = `
   <div class="w-tabs">
     <button class="track-pill ${pref.wSubTab==='drill'?'active':''}" data-wtab="drill">🧠 뼈대·예시 4단계 암기 훈련</button>
-    <button class="track-pill ${pref.wSubTab==='pool'?'active':''}" data-wtab="pool">📝 ETS 공식 Issue 158제 연습</button>
+    <button class="track-pill ${pref.wSubTab==='map'?'active':''}" data-wtab="map">🗺️ 전 문항(165제) 예시·전개 도감</button>
+    <button class="track-pill ${pref.wSubTab==='pool'?'active':''}" data-wtab="pool">📝 ETS 공식 Issue 165제 연습</button>
     <button class="track-pill ${pref.wSubTab==='guide'?'active':''}" data-wtab="guide">💡 전체 뼈대 & 만능예시 10선 한눈에 보기</button>
     <button class="track-pill ${pref.wSubTab==='my'?'active':''}" data-wtab="my">🏆 내 에세이(5.0점) & 첨삭 복습</button>
   </div>`;
@@ -1937,10 +1938,30 @@ function renderWritingTab(view) {
           <span class="badge">Issue #${curIssue.num}</span>
           <span class="badge freq">${esc(curIssue.category)}</span>
           <span class="badge" style="background:var(--ok-bg);color:var(--ok)">${esc(curIssue.task_type)}</span>
+          ${curIssue.guide ? `<span class="badge" style="background:var(--brand-bg);color:var(--brand)">${esc(curIssue.guide.stance)}</span>` : ''}
         </div>
         <div class="issue-prompt">${esc(curIssue.prompt)}</div>
         <div class="issue-instr">${esc(curIssue.instruction)}</div>
       </div>
+
+      ${curIssue.guide ? `
+      <div class="fc-box" style="margin-top:10px;border-color:var(--brand);background:var(--brand-bg)">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+          <div class="lbl" style="margin:0;color:var(--brand)">🗺️ Issue #${curIssue.num} 맞춤 주장 & 본론 1·2·3 만능 예시 전개 가이드</div>
+          <button type="button" class="btn sm" id="btnAutoFillGuide" style="font-size:11.5px;padding:4px 10px">⚡ 이 문항 맞춤 뼈대 + 만능예시 원문 에세이창에 자동 세팅</button>
+        </div>
+        <div style="font-size:13px;line-height:1.65">
+          <div style="margin-bottom:6px">• <b>핵심 테제(한글)</b>: ${esc(curIssue.guide.thesis_ko)}</div>
+          <div style="margin-bottom:6px;font-family:Georgia,serif;background:var(--panel);padding:6px 9px;border-radius:6px;border:1px solid var(--line)">
+            <div><b style="color:var(--bad)">[서론 3문장 disagree 뒤 빈칸]</b>: <i>...I fundamentally disagree with the monolithic premise that <b>${esc(curIssue.guide.disagree_en)}</b>.</i></div>
+            <div style="margin-top:3px"><b style="color:var(--brand)">[서론 4문장 Instead 뒤 내 핵심 테제]</b>: <i>Instead, a discerning examination reveals that <b>${esc(curIssue.guide.thesis_en)}</b>.</i></div>
+          </div>
+          <div style="margin-bottom:4px">• <b>본론 1 (양보) — <span style="color:var(--brand)">${esc(curIssue.guide.b1_ex)}</span></b>: ${esc(curIssue.guide.b1_plan)}</div>
+          <div style="margin-bottom:4px">• <b>본론 2 (주력 1) — <span style="color:var(--ok)">${esc(curIssue.guide.b2_ex)}</span></b>: ${esc(curIssue.guide.b2_plan)}</div>
+          <div style="margin-bottom:4px">• <b>본론 3 (주력 2) — <span style="color:var(--ok)">${esc(curIssue.guide.b3_ex)}</span></b>: ${esc(curIssue.guide.b3_plan)}</div>
+          <div style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);color:var(--muted);font-size:12.5px"><b>🧭 전체 전개 흐름 요약</b>: ${esc(curIssue.guide.story)}</div>
+        </div>
+      </div>` : ''}
     </div>
 
     <div class="panel">
@@ -1962,7 +1983,7 @@ function renderWritingTab(view) {
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12.5px;flex-wrap:wrap;gap:6px">
           <div style="display:flex;align-items:center;gap:8px">
             <b>실전 에세이 작성</b>
-            <button type="button" class="btn ghost sm" id="btnInsertTemplate" style="padding:3px 9px;font-size:11.5px">🧩 5.0+ 고급어휘 5문단 뼈대 넣기 (167단어)</button>
+            <button type="button" class="btn ghost sm" id="btnInsertTemplate" style="padding:3px 9px;font-size:11.5px">🧩 5.0+ 고급어휘 5문단 뼈대 넣기 (168단어)</button>
           </div>
           <span>Word Count: <b id="wCountNum" style="color:${wc>=500?'var(--ok)':'var(--brand)'}">${wc}</b> / 500+ words</span>
         </div>
@@ -1976,6 +1997,108 @@ function renderWritingTab(view) {
           <button class="btn ghost sm" id="btnDownloadEssay">💾 .txt 저장</button>
         </div>
       </div>
+    </div>`;
+  } else if (pref.wSubTab === 'map') {
+    const cats = [...new Set(M.issues.map(x => x.category))];
+    const types = [...new Set(M.issues.map(x => x.task_type))];
+    const mapCat = pref.wMapCat || 'all';
+    const mapType = pref.wMapType || 'all';
+    const mapEx = pref.wMapEx || 'all';
+    const mapQ = (pref.wMapQ || '').trim().toLowerCase();
+
+    const exTitles = [
+      [1, '예시 1: 케냐 뒤파 성교육·HIV 실증연구'],
+      [2, '예시 2: 한국 14시간 입시 vs 핀란드 자율교육'],
+      [3, '예시 3: 황우석 줄기세포 조작 & 한나 아렌트'],
+      [4, '예시 4: 선한 사마리아인 법 & 뉴딜 정책'],
+      [5, '예시 5: 아인슈타인 상대성이론(GPS) & 벨 연구소'],
+      [6, '예시 6: MIT 가짜뉴스 6배 확산 & 에코챔버'],
+      [7, '예시 7: 1987 몬트리올 의정서 & 친환경 냉매'],
+      [8, '예시 8: 피카소·오웰 1984 & 노틀담·북촌 복원'],
+      [9, '예시 9: 처칠 유화책 거부 vs 링컨 노예해방 타협'],
+      [10, '예시 10: 코닥 파산 vs 스티브 잡스 서체·매킨토시']
+    ];
+
+    const list = M.issues.filter(x => {
+      if (mapCat !== 'all' && x.category !== mapCat) return false;
+      if (mapType !== 'all' && x.task_type !== mapType) return false;
+      const g = x.guide || {};
+      if (mapEx !== 'all') {
+        const en = Number(mapEx);
+        if (g.b1_num !== en && g.b2_num !== en && g.b3_num !== en) return false;
+      }
+      if (mapQ) {
+        const hay = `#${x.num} ${x.num} ${x.prompt} ${x.category} ${x.task_type} ${g.stance||''} ${g.thesis_ko||''} ${g.thesis_en||''} ${g.b1_ex||''} ${g.b2_ex||''} ${g.b3_ex||''} ${g.story||''}`.toLowerCase();
+        if (!hay.includes(mapQ)) return false;
+      }
+      return true;
+    });
+
+    html += `
+    <div class="panel" style="border:2px solid var(--brand);background:var(--brand-bg)">
+      <div class="panel-title" style="margin-bottom:6px">
+        <span>🗺️ ETS 공식 165개 전 문항 만능틀 주장 + 본론 1·2·3 예시 조합 & 전개 도감</span>
+        <span class="badge freq">표시 문항: ${list.length} / ${M.issues.length}제</span>
+      </div>
+      <p style="margin:0 0 10px;font-size:13px;color:var(--muted);line-height:1.55">
+        1번부터 165번까지 어떤 문제가 나와도 <b>서론 빈칸에 넣을 영어 주장(Thesis)</b>과 <b>본론 1(양보)·본론 2(주력1)·본론 3(주력2)에 투입할 만능 예시 조합 및 전개 흐름</b>을 문항별로 정리한 도감입니다. 번호나 키워드로 검색하거나 오른쪽 <b>[✍️ 이 문항으로 연습]</b> 버튼을 눌러 바로 작성해 보세요.
+      </p>
+      <div class="filter-bar">
+        <select class="select" id="wMapSelCat">
+          <option value="all">주제 분야 전체 (${M.issues.length})</option>
+          ${cats.map(c => `<option value="${esc(c)}" ${mapCat===c?'selected':''}>${esc(c)}</option>`).join('')}
+        </select>
+        <select class="select" id="wMapSelType">
+          <option value="all">지시문 유형 전체</option>
+          ${types.map(t => `<option value="${esc(t)}" ${mapType===t?'selected':''}>${esc(t)}</option>`).join('')}
+        </select>
+        <select class="select" id="wMapSelEx">
+          <option value="all">만능 예시 전체 (1~10번)</option>
+          ${exTitles.map(([n, label]) => `<option value="${n}" ${Number(mapEx)===n?'selected':''}>${esc(label)}</option>`).join('')}
+        </select>
+        <input type="text" class="input" id="wMapSearch" value="${esc(pref.wMapQ||'')}" placeholder="문항 번호(예: #56) 또는 영어·한글 키워드 검색..." style="flex:1;min-width:200px">
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${list.map(x => {
+        const g = x.guide || {};
+        return `
+        <div class="panel" style="margin-bottom:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <span class="badge" style="font-size:13px;font-weight:800">Issue #${x.num}</span>
+              <span class="badge freq">${esc(x.category)}</span>
+              <span class="badge" style="background:var(--ok-bg);color:var(--ok)">${esc(x.task_type)}</span>
+              <span class="badge" style="background:var(--brand-bg);color:var(--brand);font-weight:800">${esc(g.stance||'')}</span>
+            </div>
+            <button type="button" class="btn sm w-map-go-btn" data-inum="${x.num}" style="padding:5px 11px;font-size:12px">✍️ 이 문항으로 바로 실전 연습 →</button>
+          </div>
+          <div class="issue-prompt" style="font-size:14.5px;margin-bottom:6px">${esc(x.prompt)}</div>
+          <div class="issue-instr" style="font-size:12px;margin-bottom:10px">${esc(x.instruction)}</div>
+          <div class="fc-box" style="margin-top:0;font-size:13px;line-height:1.65">
+            <div style="margin-bottom:6px">🎯 <b>핵심 테제</b>: <b style="color:var(--ink)">${esc(g.thesis_ko||'')}</b></div>
+            <div style="margin-bottom:8px;font-family:Georgia,serif;background:var(--panel);padding:7px 10px;border-radius:6px;border:1px solid var(--line);font-size:13px">
+              <div><span style="color:var(--bad);font-weight:700">[서론 3문장 disagree 빈칸]</span>: <i>...I fundamentally disagree with the monolithic premise that <b>${esc(g.disagree_en||'')}</b>.</i></div>
+              <div style="margin-top:4px"><span style="color:var(--brand);font-weight:700">[서론 4문장 Instead 내 주장]</span>: <i>Instead, a discerning examination reveals that <b>${esc(g.thesis_en||'')}</b>.</i></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr;gap:5px;margin-bottom:8px">
+              <div style="padding:6px 9px;border-radius:6px;background:var(--panel);border-left:3px solid #f59e0b">
+                <b>[본론 1 · 양보(Admittedly)] ${esc(g.b1_ex||'')}</b><br>${esc(g.b1_plan||'')}
+              </div>
+              <div style="padding:6px 9px;border-radius:6px;background:var(--panel);border-left:3px solid var(--brand)">
+                <b>[본론 2 · 주력 근거 1(However)] ${esc(g.b2_ex||'')}</b><br>${esc(g.b2_plan||'')}
+              </div>
+              <div style="padding:6px 9px;border-radius:6px;background:var(--panel);border-left:3px solid var(--ok)">
+                <b>[본론 3 · 주력 근거 2(Furthermore)] ${esc(g.b3_ex||'')}</b><br>${esc(g.b3_plan||'')}
+              </div>
+            </div>
+            <div style="padding:7px 10px;border-radius:6px;background:var(--brand-bg);font-size:12.5px;color:var(--ink)">
+              <b>🧭 에세이 전체 전개 스토리</b>: ${esc(g.story||'')}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
     </div>`;
   } else if (pref.wSubTab === 'my') {
     html += M.my_essays.map(e => `
@@ -2299,6 +2422,67 @@ In conclusion, treating this proposition as an immutable axiom—or dismissing i
       a.href = URL.createObjectURL(new Blob([txt], {type:'text/plain;charset=utf-8'}));
       a.download = `GRE_Issue_${iss.num}_신민우.txt`;
       a.click();
+    });
+    $('#btnAutoFillGuide')?.addEventListener('click', () => {
+      const iss = M.issues.find(x => x.num === curNum);
+      const g = iss?.guide;
+      if (!g) return;
+      const getExBlock = (n) => {
+        const d = W_DRILLS.find(x => x.id === 'ex_' + n);
+        return d ? d.sentences.map(s => s.en).join(' ') : '';
+      };
+      const b1Block = getExBlock(g.b1_num);
+      const b2Block = getExBlock(g.b2_num);
+      const b3Block = getExBlock(g.b3_num);
+      const autoOutline = `[입장] ${g.stance}\n[핵심 테제] ${g.thesis_ko}\n[본론 1 (양보)] ${g.b1_ex} — ${g.b1_plan}\n[본론 2 (주력 1)] ${g.b2_ex} — ${g.b2_plan}\n[본론 3 (주력 2)] ${g.b3_ex} — ${g.b3_plan}`;
+      const autoEssay = `The assertion that ${g.disagree_en} warrants rigorous scrutiny, as it is laden with appreciable merits yet fraught with profound limitations. While proponents contend that [상대방 측 논리 1줄], skeptics counter that such a view is overly myopic and reductionist. Although the claim holds contingent validity in narrow contexts, I fundamentally disagree with the monolithic premise that ${g.disagree_en}. Instead, a discerning examination reveals that ${g.thesis_en}.
+
+Admittedly, in certain specialized or formative contexts, [상대방 입장이 맞을 수 있는 조건] can serve as a pragmatic expedient. For instance, consider the case of [양보 사례 연결]. ${b1Block} This illustrates that under these particular constraints, the merits of [상대방 주장 명사구] cannot be entirely dismissed.
+
+However, when extrapolated to a broader paradigm, ${b2Block} Thus, this empirical case corroborates that [프롬프트 원문 키워드로 연결(Tie-back)].
+
+Furthermore, from an overarching societal perspective, ${b3Block} Ultimately, this phenomenon epitomizes how [프롬프트 원문 키워드로 연결(Tie-back)].
+
+In conclusion, treating this proposition as an immutable axiom—or dismissing it altogether—rests on a false dichotomy. While [양보 조건 요약] may prove efficacious in isolated instances, its indiscriminate application is ultimately untenable. Not only does [단수주어 + 동사원형: 내 핵심 근거 1], but it also [단수동사(-s/es): 내 핵심 근거 2]. If implemented indiscriminately, such an approach would precipitate severe unintended consequences, ranging from institutional stagnation to broader societal inefficiency.`;
+      if (!essEl.value.trim() || confirm('이 문항 맞춤 서론 주장과 본론 1·2·3 추천 만능예시 영어 원문이 채워진 초안을 에세이 창에 넣을까요?')) {
+        outEl.value = autoOutline;
+        essEl.value = autoEssay;
+        saveW();
+      }
+    });
+  } else if (pref.wSubTab === 'map') {
+    $('#wMapSelCat')?.addEventListener('change', e => { pref.wMapCat = e.target.value; savePref(); render(); });
+    $('#wMapSelType')?.addEventListener('change', e => { pref.wMapType = e.target.value; savePref(); render(); });
+    $('#wMapSelEx')?.addEventListener('change', e => { pref.wMapEx = e.target.value; savePref(); render(); });
+    const qInp = $('#wMapSearch');
+    if (qInp) {
+      qInp.addEventListener('input', e => {
+        pref.wMapQ = e.target.value;
+        savePref();
+        const pos = qInp.selectionStart;
+        render();
+        const nq = $('#wMapSearch');
+        if (nq) { nq.focus(); nq.setSelectionRange(pos, pos); }
+      });
+    }
+    view.querySelectorAll('.w-map-go-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const num = Number(btn.dataset.inum);
+        const iss = M.issues.find(x => x.num === num);
+        pref.wCat = 'all';
+        pref.wType = 'all';
+        pref.activeIssue = num;
+        pref.wSubTab = 'pool';
+        if (iss?.guide && (!wStore[num] || !wStore[num].outline)) {
+          const g = iss.guide;
+          wStore[num] = wStore[num] || { outline: '', essay: '' };
+          wStore[num].outline = `[입장] ${g.stance}\n[핵심 테제] ${g.thesis_ko}\n[본론 1 (양보)] ${g.b1_ex} — ${g.b1_plan}\n[본론 2 (주력 1)] ${g.b2_ex} — ${g.b2_plan}\n[본론 3 (주력 2)] ${g.b3_ex} — ${g.b3_plan}`;
+          saveJSON(SK_WRITING, wStore);
+        }
+        savePref();
+        render();
+        window.scrollTo(0, 0);
+      });
     });
   }
 }
