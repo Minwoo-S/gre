@@ -591,7 +591,25 @@ body.vp-mono-mode .bottom-nav .nav-item.active {
   font-size: 12px;
   font-weight: 700;
   color: #78c2a4;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+}
+.vpm-vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 7px;
+  white-space: normal;
+}
+.vpm-vocab-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #1a1e1c;
+  border: 1px solid #262c29;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.vpm-vocab-item.ans {
+  border-color: #3d6856;
+  background: #17231e;
 }
 </style>
 </head>
@@ -627,12 +645,12 @@ body.vp-mono-mode .bottom-nav .nav-item.active {
   <button class="nav-item" data-tab="writing"><span class="ico">✍️</span><span>라이팅</span></button>
 </nav>
 
-<script src="data.js"></script>
+<script src="data.js?v=10"></script>
 <script>
 (function(){
 'use strict';
 let M = window.GRE_MASTER_DATA || window.GRE_MASTER;
-if (M && (!M.vprobs || !M.quant || M.quant.length < 140 || (M.quant[0] && M.quant[0].pron)) && location.protocol.startsWith('http')) {
+if (M && (!M.vprobs || !M.vprobs[1]?.stem_g || !Object.keys(M.vprobs[1].stem_g).length || !M.quant || M.quant.length < 140 || (M.quant[0] && M.quant[0].pron)) && location.protocol.startsWith('http')) {
   if ('caches' in window) {
     caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k))));
   }
@@ -1789,6 +1807,47 @@ function renderMonotoneOpt(q, opt, L, st) {
   </button>`;
 }
 
+function renderMonotoneVocabBoxes(q) {
+  const letters = "ABCDEFGHI";
+  const stemExtras = Object.entries(q.stem_g || {});
+  const optsGrid = (q.opts || []).map((opt, idx) => {
+    const L = letters[idx];
+    const isAns = q.answer.includes(L);
+    return `
+      <div class="vpm-vocab-item ${isAns ? "ans" : ""}" data-vpm-sp="${esc(opt.w)}" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+          <span style="font-weight:700;color:${isAns ? "#78c2a4" : "#f1f5f3"}">[${L}] ${esc(opt.w)} ${isAns ? '<span style="font-size:11px;color:#78c2a4">★정답</span>' : ""}</span>
+          <span style="font-size:11.5px;color:#6f7873">🔊</span>
+        </div>
+        <div style="color:#d5ddd8;margin-top:2px;font-weight:600">${esc(opt.m || "")}</div>
+        ${opt.s ? `<div style="font-size:11.5px;color:#8a948e;margin-top:2px">동의어: ${esc(opt.s)}</div>` : ""}
+      </div>`;
+  }).join("");
+
+  const stemGrid = stemExtras.map(([kw, km]) => `
+    <div class="vpm-vocab-item" data-vpm-sp="${esc(kw)}" style="cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+        <span style="font-weight:700;color:#b8c7be">${esc(kw)}</span>
+        <span style="font-size:11.5px;color:#6f7873">🔊</span>
+      </div>
+      <div style="color:#d5ddd8;margin-top:2px">${esc(km)}</div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="vpm-box">
+      <div class="vpm-box-lbl">보기 ${q.opts.length}개 단어 뜻 · 동의어</div>
+      <div class="vpm-vocab-grid">${optsGrid}</div>
+    </div>
+    ${stemExtras.length ? `
+      <div class="vpm-box">
+        <div class="vpm-box-lbl">문장 내 어려운 단어 · 구문</div>
+        <div class="vpm-vocab-grid">${stemGrid}</div>
+      </div>
+    ` : ""}
+  `;
+}
+
 function renderVProbTab(view) {
   const all = M.vprobs || [];
   if (!pref.vpType || !["all", "TC1", "TC23", "SE"].includes(pref.vpType)) pref.vpType = "all";
@@ -1894,11 +1953,7 @@ function renderVProbTab(view) {
             <button type="button" id="btnVPMRetry" style="font-size:12.5px;color:#8a948e;font-weight:500">다시 풀기</button>
           </div>
 
-          ${stemExtras.length ? `
-            <div class="vpm-box">
-              <div class="vpm-box-lbl">문장 어휘</div>${stemExtras.map(([k, v]) => `${esc(k)}: ${esc(v)}`).join(" · ")}
-            </div>
-          ` : ""}
+          ${renderMonotoneVocabBoxes(q)}
 
           ${q.explanation ? `
             <div class="vpm-box">
@@ -2003,6 +2058,9 @@ function renderVProbTab(view) {
         window.scrollTo(0, 0);
       }
     });
+    view.querySelectorAll("[data-vpm-sp]").forEach(el => {
+      el.addEventListener("click", () => speakWord(el.dataset.vpmSp));
+    });
     return;
   }
 
@@ -2028,6 +2086,7 @@ function renderVProbTab(view) {
           <div class="vpm-opt-list">
             ${q.opts.map((opt, i) => renderMonotoneOpt(q, opt, letters[i], stMock)).join("")}
           </div>
+          ${renderMonotoneVocabBoxes(q)}
           ${q.explanation ? `<div class="vpm-box"><div class="vpm-box-lbl">해설</div>${esc(q.explanation)}</div>` : ""}
           ${q.trap ? `<div class="vpm-box" style="border-color:#3a2628"><div class="vpm-box-lbl" style="color:#e06c75">함정</div>${esc(q.trap)}</div>` : ""}
         </div>`;
@@ -2036,6 +2095,9 @@ function renderVProbTab(view) {
 
     $("#btnVPMWrongBack")?.addEventListener("click", () => { vpSubView = "home"; render(); window.scrollTo(0, 0); });
     $("#btnVPMRetryWrong")?.addEventListener("click", () => { startVPRun(wrongList); });
+    view.querySelectorAll("[data-vpm-sp]").forEach(el => {
+      el.addEventListener("click", () => speakWord(el.dataset.vpmSp));
+    });
     view.querySelectorAll("[data-vpm-clearwrong]").forEach(b => {
       b.addEventListener("click", () => {
         saveVPState(b.dataset.vpmClearwrong, { st: 2, ok: true });
