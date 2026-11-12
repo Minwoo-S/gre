@@ -88,15 +88,16 @@ button { cursor: pointer; border: none; background: none; }
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
   background: var(--panel); border-top: 1px solid var(--line);
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   padding-bottom: var(--safe-b);
   box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 8px 4px; color: var(--muted); font-size: 11px; font-weight: 600; gap: 2px;
+  padding: 7px 2px; color: var(--muted); font-size: 10.5px; font-weight: 600; gap: 2px;
+  white-space: nowrap;
 }
-.nav-item .ico { font-size: 19px; line-height: 1.1; }
+.nav-item .ico { font-size: 18px; line-height: 1.1; }
 .nav-item.active { color: var(--brand); font-weight: 800; }
 
 /* Track Selector Bar */
@@ -327,6 +328,72 @@ button { cursor: pointer; border: none; background: none; }
   background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 13px;
   max-height: 480px; overflow-y: auto;
 }
+
+/* Verbal Vocabulary Problem Drill UI (476 TC·SE Questions) */
+.vp-card {
+  background: var(--panel); border: 1.5px solid var(--line); border-radius: 14px;
+  padding: 15px 14px; margin-bottom: 12px; box-shadow: var(--shadow);
+}
+.vp-card.st-ok { border-left: 6px solid #16a34a; }
+.vp-card.st-bad { border-left: 6px solid #dc2626; }
+.vp-stem {
+  font-family: Georgia, "Times New Roman", serif; font-size: 16.5px; line-height: 1.78;
+  color: var(--ink); background: var(--panel2); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px 15px; margin: 10px 0 13px;
+}
+.vp-blank {
+  display: inline-block; padding: 1px 8px; border-radius: 6px;
+  border-bottom: 2px solid var(--brand); background: var(--brand-bg); color: var(--brand);
+  font-weight: 800; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px; margin: 0 2px; vertical-align: baseline;
+}
+.vp-blank.picking { background: #dbeafe; color: #1d4ed8; border-color: #2563eb; }
+.vp-blank.graded { background: var(--ok-bg); color: var(--ok); border-color: #16a34a; }
+.vp-opt-list { display: flex; flex-direction: column; gap: 7px; }
+.vp-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 9px; }
+.vp-cols.graded { grid-template-columns: 1fr; gap: 11px; }
+.vp-col-box {
+  background: var(--panel2); border: 1px solid var(--line); border-radius: 11px; padding: 9px;
+}
+.vp-col-hdr {
+  font-size: 12px; font-weight: 800; color: var(--brand); margin-bottom: 6px; text-align: center;
+}
+.vp-opt {
+  width: 100%; text-align: left; padding: 10px 12px;
+  border: 2px solid var(--line); border-radius: 11px; background: var(--panel);
+  transition: all 0.12s; display: flex; flex-direction: column; gap: 3px;
+  cursor: pointer; user-select: none;
+}
+.vp-opt:active { transform: scale(0.99); }
+.vp-opt.picked { border-color: var(--brand); background: var(--brand-bg); }
+.vp-opt.is-ans { border-color: #16a34a; background: var(--ok-bg); }
+.vp-opt.is-wrong { border-color: #dc2626; background: var(--bad-bg); }
+.vp-opt-top { display: flex; align-items: center; gap: 8px; width: 100%; flex-wrap: wrap; }
+.vp-let {
+  width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; flex-shrink: 0; color: var(--muted);
+}
+.vp-opt.picked .vp-let { background: var(--brand); border-color: var(--brand); color: #fff; }
+.vp-opt.is-ans .vp-let { background: #16a34a; border-color: #16a34a; color: #fff; }
+.vp-opt.is-wrong .vp-let { background: #dc2626; border-color: #dc2626; color: #fff; }
+.vp-word { font-size: 16px; font-weight: 800; color: var(--ink); word-break: break-word; }
+.vp-mean-row {
+  padding-left: 32px; font-size: 14.5px; font-weight: 800; color: var(--ink); line-height: 1.45;
+}
+.vp-opt.is-ans .vp-mean-row { color: var(--ok); }
+.vp-opt.is-wrong .vp-mean-row { color: var(--bad); }
+.vp-syn-row {
+  padding-left: 32px; font-size: 12px; color: var(--brand2); line-height: 1.4;
+}
+.vp-all6-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 6px; margin-top: 7px;
+}
+.vp-all6-item {
+  padding: 7px 10px; border-radius: 9px; border: 1px solid var(--line);
+  background: var(--panel); font-size: 13px; line-height: 1.45;
+}
+.vp-all6-item.ans { border-color: #16a34a; background: var(--ok-bg); }
 </style>
 </head>
 <body>
@@ -337,10 +404,11 @@ button { cursor: pointer; border: none; background: none; }
     <span class="dday-badge" id="ddayBadge">11/15 시험</span>
   </div>
   <div class="hdr-actions">
+    <button class="hdr-btn" id="btnHeaderVProb" style="background:#f43f5e;color:#fff;font-weight:800">🧩 단어문제(476)</button>
     <a class="hdr-btn" href="./verbal/index.html" style="background:#38bdf8;color:#0f172a;font-weight:800;text-decoration:none">📖 버벌모의</a>
     <a class="hdr-btn" href="./quant/index.html" style="background:#34d399;color:#0f172a;font-weight:800;text-decoration:none">🔢 퀀트모의</a>
-    <button class="hdr-btn" id="btnHeaderBlurMean" style="background:#fbbf24;color:#1e293b;font-weight:800">🙈 한국어뜻 가리기</button>
-    <button class="hdr-btn" id="btnSearchModal">🔍 검색</button>
+    <button class="hdr-btn" id="btnHeaderBlurMean" style="background:#fbbf24;color:#1e293b;font-weight:800">🙈 뜻 가리기</button>
+    <button class="hdr-btn" id="btnSearchModal">🔍</button>
     <button class="hdr-btn" id="btnTheme">🌙</button>
   </div>
 </header>
@@ -352,10 +420,11 @@ button { cursor: pointer; border: none; background: none; }
 </div>
 
 <nav class="bottom-nav">
-  <button class="nav-item active" data-tab="plan"><span class="ico">📅</span><span>범위·오늘분량</span></button>
-  <button class="nav-item" data-tab="list"><span class="ico">📋</span><span>단어장·암기</span></button>
+  <button class="nav-item active" data-tab="plan"><span class="ico">📅</span><span>범위·분량</span></button>
+  <button class="nav-item" data-tab="list"><span class="ico">📋</span><span>단어장</span></button>
   <button class="nav-item" data-tab="card"><span class="ico">🃏</span><span>플래시카드</span></button>
-  <button class="nav-item" data-tab="quiz"><span class="ico">🎯</span><span>단어테스트</span></button>
+  <button class="nav-item" data-tab="quiz"><span class="ico">🎯</span><span>단어퀴즈</span></button>
+  <button class="nav-item" data-tab="vprob"><span class="ico">🧩</span><span>단어문제</span></button>
   <button class="nav-item" data-tab="writing"><span class="ico">✍️</span><span>라이팅</span></button>
 </nav>
 
@@ -364,7 +433,7 @@ button { cursor: pointer; border: none; background: none; }
 (function(){
 'use strict';
 let M = window.GRE_MASTER_DATA || window.GRE_MASTER;
-if (M && M.quant && (M.quant.length < 140 || (M.quant[0] && M.quant[0].pron)) && location.protocol.startsWith('http')) {
+if (M && (!M.vprobs || !M.quant || M.quant.length < 140 || (M.quant[0] && M.quant[0].pron)) && location.protocol.startsWith('http')) {
   if ('caches' in window) {
     caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k))));
   }
@@ -387,6 +456,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;
 
 const SK_PROG = 'gre10_vocab_prog_v1';
 const SK_WRITING = 'gre10_writing_v1';
+const SK_VPROB = 'gre10_vprob_v1';
 const SK_PREF = 'gre10_pref_v2';
 
 function loadJSON(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e) { return def; } }
@@ -394,6 +464,7 @@ function saveJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } ca
 
 let prog = loadJSON(SK_PROG, {});
 let wStore = loadJSON(SK_WRITING, {});
+let vprobStore = loadJSON(SK_VPROB, {});
 let pref = Object.assign({
   tab: 'plan',
   track: 'kang',
@@ -411,6 +482,13 @@ let pref = Object.assign({
   showSynInList: true,
   quizMode: 'meaning', // 'meaning' | 'synonym' | 'reverse' | 'mix'
   quizSize: 30,        // 20 | 30 | 50 | 9999
+  vpViewMode: 'card',  // 'card' (1문제씩 집중풀기) | 'list' (연속 스크롤 모아보기)
+  vpType: 'all',       // 'all' | 'SE' | 'TC' | 'TC1' | 'TC2' | 'TC3'
+  vpSetFilter: 'all',  // 'all' | 'cn' | 'g1'..'g7' | 's1'..'s34'
+  vpStFilter: 'all',   // 'all' | 'unsolved' | 'bad' | 'star' | 'ok'
+  vpIdx: 0,
+  vpRevealAll: false,
+  vpShuffle: 0,
   wSubTab: 'drill',
   wDrillId: 'skel_1',
   wDrillStep: 1,
@@ -419,6 +497,10 @@ let pref = Object.assign({
   activeIssue: 159,
   dark: false
 }, loadJSON(SK_PREF, {}));
+
+if (location.hash === '#vprob' || new URLSearchParams(location.search).get('tab') === 'vprob') {
+  pref.tab = 'vprob';
+}
 
 /* Optional Sync with local Python server if accessed via http://IP:8765 */
 async function pullServerSync() {
@@ -440,6 +522,12 @@ async function pullServerSync() {
       }
       if (changed) saveJSON(SK_WRITING, wStore);
     }
+    if (d.vprobStore) {
+      for (const [k, v] of Object.entries(d.vprobStore)) {
+        if (!vprobStore[k] || (v.t || 0) > (vprobStore[k].t || 0)) { vprobStore[k] = v; changed = true; }
+      }
+      if (changed) saveJSON(SK_VPROB, vprobStore);
+    }
     if (changed) render();
   } catch(e) {}
 }
@@ -448,12 +536,12 @@ function pushServerSync() {
   fetch('/api/sync', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ prog, wStore })
+    body: JSON.stringify({ prog, wStore, vprobStore })
   }).catch(() => {});
 }
 pullServerSync();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('./sw.js?v=18').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('./sw.js?v=22').then(r => r.update()).catch(() => {});
 }
 
 function savePref() { saveJSON(SK_PREF, pref); }
@@ -782,8 +870,28 @@ function renderPlanTab(view) {
   const day0List = M.kang.filter(x => x.day10 === 0);
   const day0Ok = day0List.filter(x => getWordState(x.word).st === 3).length;
 
+  const vps = M.vprobs || [];
+  const vpOk = vps.filter(q => (vprobStore[q.id]?.st || 0) === 2).length;
+  const vpBad = vps.filter(q => (vprobStore[q.id]?.st || 0) === 1).length;
+
   let html = renderTrackBar();
   html += `
+  <div class="panel" style="border:2px solid #e11d48;background:var(--bad-bg)">
+    <div class="panel-title" style="margin-bottom:6px">
+      <span style="font-size:16.5px;color:#be123c">🧩 버벌 단어문제 476문항 (SE 238 + TC 238) 문제 통암기</span>
+      <span class="badge" style="background:#be123c;color:#fff;font-size:12px">완료 ${vpOk} / ${vps.length} · 복습 ${vpBad}</span>
+    </div>
+    <p style="margin:0 0 11px;font-size:13.5px;color:var(--ink);line-height:1.55">
+      • Verbal 34세트에서 독해(RC)를 빼고 <b>단어 문제(SE 동의어 2개 선택 238문항 + TC 빈칸 추론 238문항 = 총 476문항)</b>만 모았습니다.<br>
+      • 폰에서 단어를 터치해 고르면 <b>즉시 채점</b>되고, 곧바로 <b>보기 6개(전체) 단어의 한국어 뜻·동의어·기출횟수·해설·함정</b>이 한꺼번에 펼쳐집니다.
+    </p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="btnGoVProbAll" style="background:#e11d48">🧩 전체 476문항 바로 풀기·외우기</button>
+      <button class="btn ghost" id="btnGoVProbSE" style="background:var(--panel);border-color:#e11d48;color:#be123c">🎯 SE 동의어 2개선택 (238문항)</button>
+      <button class="btn ghost" id="btnGoVProbCN" style="background:var(--panel);border-color:#e11d48;color:#be123c">🔥 중국 기출후기 (277문항)</button>
+    </div>
+  </div>
+
   <div class="panel" style="border:2px solid var(--brand);background:var(--brand-bg)">
     <div class="panel-title" style="margin-bottom:6px">
       <span style="font-size:17px">🔥 오늘(11월 4일 밤) 외울 분량: 최다 기출 114단어 (Ch 1~3)</span>
@@ -859,6 +967,15 @@ function renderPlanTab(view) {
   view.innerHTML = html;
   bindTrackBar(view);
 
+  $('#btnGoVProbAll')?.addEventListener('click', () => {
+    pref.vpType = 'all'; pref.vpSetFilter = 'all'; pref.vpStFilter = 'all'; pref.vpIdx = 0; pref.tab = 'vprob'; savePref(); render();
+  });
+  $('#btnGoVProbSE')?.addEventListener('click', () => {
+    pref.vpType = 'SE'; pref.vpSetFilter = 'all'; pref.vpStFilter = 'all'; pref.vpIdx = 0; pref.tab = 'vprob'; savePref(); render();
+  });
+  $('#btnGoVProbCN')?.addEventListener('click', () => {
+    pref.vpType = 'all'; pref.vpSetFilter = 'cn'; pref.vpStFilter = 'all'; pref.vpIdx = 0; pref.tab = 'vprob'; savePref(); render();
+  });
   $('#btnStartTonightList').addEventListener('click', () => {
     pref.track = 'kang'; pref.day = 0; pref.sessionPart = 0; pref.stFilter = 'all'; pref.tab = 'list'; savePref(); render();
   });
@@ -1323,6 +1440,631 @@ function renderQuizTab(view) {
     if (ts.idx < qs.length - 1) ts.idx++;
     else ts.finished = true;
     render();
+  });
+}
+
+/* ---------- TAB 4.5: VERBAL VOCABULARY PROBLEMS (476 TC·SE QUESTIONS) ---------- */
+let vpSession = {};
+let vpSearchQuery = '';
+let vpListPage = 1;
+const VP_PAGE_SIZE = 30;
+
+function getVPState(qid) {
+  return vprobStore[qid] || { st: 0, star: false, ans: '', ok: false };
+}
+function saveVPState(qid, patch) {
+  const cur = Object.assign({ st: 0, star: false, ans: '', ok: false }, vprobStore[qid] || {}, patch, { t: Date.now() });
+  vprobStore[qid] = cur;
+  saveJSON(SK_VPROB, vprobStore);
+  pushServerSync();
+}
+function getVPSess(q) {
+  if (!vpSession[q.id]) {
+    vpSession[q.id] = {
+      picked: q.type === 'SE' ? [] : (q.blanks === 1 ? '' : Array(q.blanks).fill('')),
+      graded: false,
+      revealedOnly: false
+    };
+  }
+  return vpSession[q.id];
+}
+function resetVPSess(q) {
+  vpSession[q.id] = {
+    picked: q.type === 'SE' ? [] : (q.blanks === 1 ? '' : Array(q.blanks).fill('')),
+    graded: false,
+    revealedOnly: false
+  };
+}
+function getFilteredVProbs() {
+  const all = M.vprobs || [];
+  let arr = all.filter(q => {
+    if (pref.vpType === 'SE' && q.type !== 'SE') return false;
+    if (pref.vpType === 'TC' && q.type !== 'TC') return false;
+    if (pref.vpType === 'TC1' && !(q.type === 'TC' && q.blanks === 1)) return false;
+    if (pref.vpType === 'TC2' && !(q.type === 'TC' && q.blanks === 2)) return false;
+    if (pref.vpType === 'TC3' && !(q.type === 'TC' && q.blanks === 3)) return false;
+
+    const sf = pref.vpSetFilter || 'all';
+    if (sf === 'cn') {
+      if (!(q.src && q.src.includes('후기'))) return false;
+    } else if (sf.startsWith('g')) {
+      const g = Number(sf.slice(1));
+      const minS = (g - 1) * 5 + 1;
+      const maxS = g * 5;
+      if (q.set < minS || q.set > maxS) return false;
+    } else if (sf.startsWith('s')) {
+      const sNo = Number(sf.slice(1));
+      if (q.set !== sNo) return false;
+    }
+
+    const stObj = getVPState(q.id);
+    if (pref.vpStFilter === 'unsolved' && stObj.st !== 0) return false;
+    if (pref.vpStFilter === 'bad' && stObj.st !== 1) return false;
+    if (pref.vpStFilter === 'ok' && stObj.st !== 2) return false;
+    if (pref.vpStFilter === 'star' && !stObj.star) return false;
+
+    if (vpSearchQuery.trim()) {
+      const kw = vpSearchQuery.trim().toLowerCase();
+      const inStem = q.stem.toLowerCase().includes(kw) || (q.src || '').toLowerCase().includes(kw) || String(q.num) === kw;
+      const inOpts = (q.opts || []).some(o => o.w.toLowerCase().includes(kw) || (o.m || '').toLowerCase().includes(kw) || (o.s || '').toLowerCase().includes(kw));
+      if (!inStem && !inOpts) return false;
+    }
+    return true;
+  });
+  if (pref.vpShuffle > 0) {
+    arr = seededShuffle(arr, pref.vpShuffle);
+  }
+  return arr;
+}
+
+function formatVPStem(q, sess, isGraded) {
+  const letters = 'ABCDEFGHI';
+  let blankIdx = 0;
+  return esc(q.stem).replace(/_{3,}/g, () => {
+    const bIdx = blankIdx++;
+    if (isGraded) {
+      if (q.type === 'SE') {
+        const ansOpts = q.answer.split('').map(L => q.opts[letters.indexOf(L)]).filter(Boolean);
+        const wStr = ansOpts.map(o => o.w).join(' / ');
+        const mStr = ansOpts[0]?.m || '';
+        return `<span class="vp-blank graded">[ ${esc(wStr)} <small style="font-weight:700;opacity:0.9">(${esc(mStr)})</small> ]</span>`;
+      } else if (q.blanks === 1) {
+        const ansOpt = q.opts[letters.indexOf(q.answer)];
+        return `<span class="vp-blank graded">[ ${esc(ansOpt?.w || q.answer)} <small style="font-weight:700;opacity:0.9">(${esc(ansOpt?.m || '')})</small> ]</span>`;
+      } else {
+        const ansL = q.answer[bIdx];
+        const ansOpt = q.opts[letters.indexOf(ansL)];
+        return `<span class="vp-blank graded">[ ${esc(ansOpt?.w || ansL)} <small style="font-weight:700;opacity:0.9">(${esc(ansOpt?.m || '')})</small> ]</span>`;
+      }
+    } else {
+      if (q.type === 'SE') {
+        const pk = sess.picked || [];
+        if (pk.length === 0) return `<span class="vp-blank">[ 동의어 2개 선택 ]</span>`;
+        const w0 = q.opts[letters.indexOf(pk[0])]?.w || pk[0];
+        return `<span class="vp-blank picking">[ ${esc(w0)} / (1개 더 선택) ]</span>`;
+      } else if (q.blanks === 1) {
+        return `<span class="vp-blank">[ 단어 1개 선택 ]</span>`;
+      } else {
+        const pkL = (sess.picked || [])[bIdx];
+        if (!pkL) return `<span class="vp-blank">[ 빈칸 (${['i','ii','iii'][bIdx]}) 선택 ]</span>`;
+        const w = q.opts[letters.indexOf(pkL)]?.w || pkL;
+        return `<span class="vp-blank picking">[ ${esc(w)} ]</span>`;
+      }
+    }
+  });
+}
+
+function renderVPOptButton(q, opt, L, sess, isGraded) {
+  const isAns = q.answer.includes(L);
+  let isPicked = false;
+  if (q.type === 'SE') isPicked = (sess.picked || []).includes(L);
+  else if (q.blanks === 1) isPicked = (sess.picked === L);
+  else isPicked = (sess.picked || []).includes(L);
+
+  let cls = 'vp-opt';
+  if (isGraded) {
+    if (isAns) cls += ' is-ans';
+    else if (isPicked) cls += ' is-wrong';
+  } else if (isPicked) {
+    cls += ' picked';
+  }
+
+  const wState = getWordState(opt.w);
+  return `
+  <div class="${cls}" data-vp-pick="${esc(q.id)}" data-vp-let="${L}">
+    <div class="vp-opt-top">
+      <span class="vp-let">${L}</span>
+      <span class="vp-word">${esc(opt.w)}</span>
+      ${isGraded && opt.p ? `<span style="font-size:12px;color:var(--muted)">${esc(opt.p)}</span>` : ''}
+      <button type="button" data-sp="${esc(opt.w)}" style="font-size:13px;padding:2px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line)" title="발음 듣기">🔊</button>
+      ${isGraded && opt.f ? `<span class="badge freq" style="font-size:10.5px;padding:1px 6px">강쌤 ${opt.f}회</span>` : ''}
+      ${isGraded && isAns ? `<span class="badge" style="background:#16a34a;color:#fff;font-size:11px">⭕ 정답</span>` : ''}
+      ${isGraded && !isAns && isPicked ? `<span class="badge" style="background:#dc2626;color:#fff;font-size:11px">❌ 내 선택</span>` : ''}
+      ${!isGraded && isPicked ? `<span class="badge" style="background:var(--brand);color:#fff;font-size:11px">선택됨</span>` : ''}
+      ${isGraded ? `
+        <span style="margin-left:auto;display:inline-flex;gap:3px" data-vp-stop="1">
+          <button type="button" class="st-dot d-bad ${wState.st===1?'on':''}" data-vp-wst="1" data-vp-word="${esc(opt.w)}" style="width:24px;height:24px;font-size:11px" title="모르는 단어로 체크">❌</button>
+          <button type="button" class="st-dot d-warn ${wState.st===2?'on':''}" data-vp-wst="2" data-vp-word="${esc(opt.w)}" style="width:24px;height:24px;font-size:11px" title="헷갈리는 단어로 체크">🔺</button>
+          <button type="button" class="st-dot d-ok ${wState.st===3?'on':''}" data-vp-wst="3" data-vp-word="${esc(opt.w)}" style="width:24px;height:24px;font-size:11px" title="외운 단어로 체크">⭕</button>
+        </span>
+      ` : ''}
+    </div>
+    ${isGraded ? `
+      <div class="vp-mean-row">→ ${esc(opt.m || '')}</div>
+      ${opt.s ? `<div class="vp-syn-row">🔗 동의어: ${esc(opt.s)}</div>` : ''}
+    ` : ''}
+  </div>`;
+}
+
+function renderVPCardHTML(q, posIdx, totalCnt) {
+  const letters = 'ABCDEFGHI';
+  const sess = getVPSess(q);
+  const isGraded = !!(sess.graded || pref.vpRevealAll);
+  const stObj = getVPState(q.id);
+
+  let myAnsStr = '';
+  if (q.type === 'SE') myAnsStr = (sess.picked || []).slice().sort().join('');
+  else if (q.blanks === 1) myAnsStr = sess.picked || '';
+  else myAnsStr = (sess.picked || []).join('');
+  const isCorrect = myAnsStr === q.answer;
+
+  const typeLabel = q.type === 'SE'
+    ? 'SE · 동의어 2개 선택 (6지선다)'
+    : `TC · ${q.blanks}빈칸 추론 (${q.opts.length}개 단어)`;
+
+  let choicesHTML = '';
+  if (q.type === 'SE' || q.blanks === 1) {
+    choicesHTML = `<div class="vp-opt-list">
+      ${q.opts.map((opt, i) => renderVPOptButton(q, opt, letters[i], sess, isGraded)).join('')}
+    </div>`;
+  } else {
+    const cols = [];
+    for (let c = 0; c < q.blanks; c++) {
+      const subOpts = q.opts.slice(c * 3, c * 3 + 3);
+      cols.push(`
+      <div class="vp-col-box">
+        <div class="vp-col-hdr">Blank (${['i','ii','iii'][c]}) 단어 선택</div>
+        <div class="vp-opt-list">
+          ${subOpts.map((opt, r) => renderVPOptButton(q, opt, letters[c * 3 + r], sess, isGraded)).join('')}
+        </div>
+      </div>`);
+    }
+    choicesHTML = `<div class="vp-cols ${isGraded ? 'graded' : ''}">${cols.join('')}</div>`;
+  }
+
+  const ansDesc = q.answer.split('').map(L => {
+    const o = q.opts[letters.indexOf(L)];
+    return o ? `${L} (${o.w}: ${o.m})` : L;
+  }).join(' · ');
+
+  const stemExtraEntries = Object.entries(q.stem_g || {});
+
+  return `
+  <div class="vp-card ${stObj.st===2?'st-ok':(stObj.st===1?'st-bad':'')}" id="vpcard_${esc(q.id)}">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span class="badge" style="background:#0f172a;color:#fff;font-size:12px">#${q.num} <span style="opacity:0.75;font-weight:500">(${posIdx+1}/${totalCnt})</span></span>
+        <span class="badge" style="background:var(--panel2);color:var(--ink);border:1px solid var(--line)">Set ${q.set} · S${q.sec}-Q${q.qno}</span>
+        <span class="badge" style="background:${q.type==='SE'?'#ede9fe':'#e0f2fe'};color:${q.type==='SE'?'#5b21b6':'#0369a1'}">${typeLabel}</span>
+        ${q.src ? `<span class="badge freq">${esc(q.src)}</span>` : ''}
+        ${stObj.st === 2 ? `<span class="badge" style="background:var(--ok-bg);color:var(--ok)">⭕ 외움·정답</span>` : ''}
+        ${stObj.st === 1 ? `<span class="badge" style="background:var(--bad-bg);color:var(--bad)">❌ 복습필요</span>` : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button type="button" class="btn small ghost" data-vp-toggle="${esc(q.id)}" style="padding:4px 9px;font-size:12px">
+          ${isGraded ? '🔄 뜻 가리고 다시 풀기' : '👁️ 바로 채점·6개 단어뜻 보기'}
+        </button>
+        <button type="button" class="st-dot d-star ${stObj.star?'on':''}" data-vp-star="${esc(q.id)}" title="별표 문제 체크">⭐</button>
+      </div>
+    </div>
+
+    <div class="vp-stem">${formatVPStem(q, sess, isGraded)}</div>
+
+    ${!isGraded ? `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12.5px;color:var(--brand);font-weight:700;flex-wrap:wrap;gap:6px">
+        <span>${q.type === 'SE'
+          ? `👆 아래 6개 단어 중 동의어 2개를 선택하세요 (${(sess.picked||[]).length}/2 선택됨 · 2개 선택 즉시 채점)`
+          : (q.blanks === 1
+              ? '👆 아래 5개 단어 중 정답 1개를 선택하세요 (터치 즉시 채점)'
+              : `👆 각 빈칸마다 단어를 1개씩 선택하세요 (${(sess.picked||[]).filter(Boolean).length}/${q.blanks} 선택됨 · 모두 선택 시 즉시 채점)`)}</span>
+      </div>
+    ` : ''}
+
+    ${choicesHTML}
+
+    ${isGraded ? `
+      <div style="margin-top:12px;padding:11px 13px;border-radius:11px;border:1.5px solid ${sess.revealedOnly || pref.vpRevealAll ? 'var(--brand)' : (isCorrect ? '#16a34a' : '#dc2626')};background:${sess.revealedOnly || pref.vpRevealAll ? 'var(--brand-bg)' : (isCorrect ? 'var(--ok-bg)' : 'var(--bad-bg)')}">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div style="font-size:14.5px;font-weight:800;color:${sess.revealedOnly || pref.vpRevealAll ? 'var(--brand)' : (isCorrect ? 'var(--ok)' : 'var(--bad)')}">
+            ${sess.revealedOnly || pref.vpRevealAll
+              ? `🔓 정답: ${esc(ansDesc)}`
+              : (isCorrect
+                  ? `⭕ 정답입니다! — ${esc(ansDesc)}`
+                  : `❌ 오답입니다 (내 선택: ${esc(myAnsStr || '없음')}) → 정답: ${esc(ansDesc)}`)}
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button type="button" class="btn small ghost" data-vp-reset="${esc(q.id)}" style="background:var(--panel);padding:4px 9px;font-size:12px">🔄 다시 선택해보기</button>
+            <button type="button" class="btn small" data-vp-setst="${esc(q.id)}" data-st="1" style="background:#dc2626;padding:4px 9px;font-size:12px">❌ 또 볼 문제</button>
+            <button type="button" class="btn small" data-vp-setst="${esc(q.id)}" data-st="2" style="background:#16a34a;padding:4px 9px;font-size:12px">⭕ 완벽 암기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-box" style="margin-top:9px;background:var(--panel2)">
+        <div class="lbl" style="font-size:12px;color:var(--brand)">📖 이 문제의 보기 ${q.opts.length}개 단어 뜻 한눈에 외우기 ${stemExtraEntries.length ? `+ 문장 핵심 어휘 (${stemExtraEntries.length}개)` : ''}</div>
+        <div class="vp-all6-grid">
+          ${q.opts.map((o, idx) => {
+            const L = letters[idx];
+            const ans = q.answer.includes(L);
+            return `<div class="vp-all6-item ${ans?'ans':''}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <span><b>[${L}] ${esc(o.w)}</b> ${ans?'<span style="color:#16a34a;font-weight:800">★정답</span>':''}</span>
+                <button type="button" data-sp="${esc(o.w)}" style="font-size:12px">🔊</button>
+              </div>
+              <div style="font-weight:800;color:${ans?'var(--ok)':'var(--ink)'};margin-top:2px">${esc(o.m)}</div>
+              ${o.s ? `<div style="font-size:11.5px;color:var(--brand2);margin-top:2px">동의어: ${esc(o.s)}</div>` : ''}
+            </div>`;
+          }).join('')}
+          ${stemExtraEntries.map(([kw, km]) => `
+            <div class="vp-all6-item" style="border-style:dashed">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
+                <span><b style="color:var(--brand)">[문장단어] ${esc(kw)}</b></span>
+                <button type="button" data-sp="${esc(kw)}" style="font-size:12px">🔊</button>
+              </div>
+              <div style="font-weight:800;color:var(--ink);margin-top:2px">${esc(km)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      ${q.explanation ? `
+        <div class="fc-box" style="margin-top:8px;white-space:pre-wrap;font-size:13.5px;line-height:1.6">
+          <div class="lbl" style="font-size:12px;color:#0f766e">💡 문장 단서 & 정답 해설</div>${esc(q.explanation)}
+        </div>
+      ` : ''}
+      ${q.trap ? `
+        <div class="fc-box" style="margin-top:8px;white-space:pre-wrap;font-size:13px;line-height:1.55;background:var(--bad-bg);border-color:rgba(220,38,38,0.25)">
+          <div class="lbl" style="font-size:12px;color:var(--bad)">⚠️ 매력적 오답 & 함정 주의</div>${esc(q.trap)}
+        </div>
+      ` : ''}
+    ` : ''}
+  </div>`;
+}
+
+function handleVPChoiceTap(q, L) {
+  const sess = getVPSess(q);
+  const letters = 'ABCDEFGHI';
+  if (sess.graded || pref.vpRevealAll) {
+    const opt = q.opts[letters.indexOf(L)];
+    if (opt) speakWord(opt.w);
+    return;
+  }
+  sess.revealedOnly = false;
+  if (q.type === 'SE') {
+    const pk = sess.picked || [];
+    const idx = pk.indexOf(L);
+    if (idx !== -1) {
+      pk.splice(idx, 1);
+    } else if (pk.length < 2) {
+      pk.push(L);
+    }
+    sess.picked = pk;
+    if (pk.length === 2) {
+      sess.graded = true;
+      const myKey = pk.slice().sort().join('');
+      const ok = (myKey === q.answer);
+      saveVPState(q.id, { st: ok ? 2 : 1, ans: myKey, ok });
+    }
+  } else if (q.blanks === 1) {
+    sess.picked = L;
+    sess.graded = true;
+    const ok = (L === q.answer);
+    saveVPState(q.id, { st: ok ? 2 : 1, ans: L, ok });
+  } else {
+    const pk = Array.isArray(sess.picked) ? sess.picked : Array(q.blanks).fill('');
+    const colIdx = Math.floor(letters.indexOf(L) / 3);
+    if (colIdx >= 0 && colIdx < q.blanks) {
+      pk[colIdx] = (pk[colIdx] === L) ? '' : L;
+    }
+    sess.picked = pk;
+    if (pk.every(Boolean)) {
+      sess.graded = true;
+      const myKey = pk.join('');
+      const ok = (myKey === q.answer);
+      saveVPState(q.id, { st: ok ? 2 : 1, ans: myKey, ok });
+    }
+  }
+}
+
+function renderVProbTab(view) {
+  const all = M.vprobs || [];
+  const filtered = getFilteredVProbs();
+
+  let okCnt = 0, badCnt = 0, starCnt = 0;
+  all.forEach(q => {
+    const s = getVPState(q.id);
+    if (s.st === 2) okCnt++;
+    else if (s.st === 1) badCnt++;
+    if (s.star) starCnt++;
+  });
+  const unsolvedCnt = all.length - okCnt - badCnt;
+
+  if (pref.vpIdx >= filtered.length) pref.vpIdx = Math.max(0, filtered.length - 1);
+  if (pref.vpIdx < 0) pref.vpIdx = 0;
+
+  let html = `
+  <div class="panel" style="padding:12px 13px;margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:9px">
+      <div>
+        <div style="font-size:16px;font-weight:900">🧩 버벌 단어문제 476문항 (SE 238 + TC 238) 통암기</div>
+        <div style="font-size:12px;color:var(--muted)">단어를 고르면 즉시 채점되고 보기 6개(전체) 단어의 한국어 뜻·동의어·해설이 펼쳐집니다.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button type="button" class="btn small ${pref.vpViewMode==='card'?'':'ghost'}" id="btnVPModeCard">📱 1문제씩 풀기</button>
+        <button type="button" class="btn small ${pref.vpViewMode==='list'?'':'ghost'}" id="btnVPModeList">📋 연속 스크롤</button>
+        <button type="button" class="btn small ${pref.vpRevealAll?'':'ghost'}" id="btnVPRevealAll" style="${pref.vpRevealAll?'background:#e11d48;border-color:#e11d48':''}">
+          ${pref.vpRevealAll ? '🔓 통암기(정답·뜻 다 펼침) ON' : '🔒 풀기모드 (채점 후 뜻 공개)'}
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-bar" style="margin-bottom:7px">
+      ${[
+        ['all', `전체 (${all.length})`],
+        ['SE', 'SE 동의어 2개선택 (238)'],
+        ['TC', 'TC 빈칸추론 전체 (238)'],
+        ['TC1', 'TC 1빈칸 (68)'],
+        ['TC2', 'TC 2빈칸·6단어 (97)'],
+        ['TC3', 'TC 3빈칸·9단어 (73)']
+      ].map(([k, lbl]) => `<button type="button" class="f-chip ${pref.vpType===k?'on':''}" data-vptype="${k}">${lbl}</button>`).join('')}
+    </div>
+
+    <div class="filter-bar" style="margin-bottom:7px">
+      ${[
+        ['all', `전체 (${all.length})`],
+        ['unsolved', `🆕 안 푼 문제 (${unsolvedCnt})`],
+        ['bad', `❌ 오답·복습 (${badCnt})`],
+        ['star', `⭐ 별표 (${starCnt})`],
+        ['ok', `⭕ 외움·정답 (${okCnt})`]
+      ].map(([k, lbl]) => `<button type="button" class="f-chip ${pref.vpStFilter===k?'on':''}" data-vpst="${k}">${lbl}</button>`).join('')}
+    </div>
+
+    <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+      <select id="selVPSet" class="select-sm" style="flex:1;min-width:150px">
+        <option value="all" ${pref.vpSetFilter==='all'?'selected':''}>📚 전체 범위 (Set 1∼34 · 476문항)</option>
+        <option value="cn" ${pref.vpSetFilter==='cn'?'selected':''}>🔥 중국 기출후기 표기 문항만 (277문항)</option>
+        <option value="g1" ${pref.vpSetFilter==='g1'?'selected':''}>📦 Set 1∼5 묶음 (70문항)</option>
+        <option value="g2" ${pref.vpSetFilter==='g2'?'selected':''}>📦 Set 6∼10 묶음 (70문항)</option>
+        <option value="g3" ${pref.vpSetFilter==='g3'?'selected':''}>📦 Set 11∼15 묶음 (70문항)</option>
+        <option value="g4" ${pref.vpSetFilter==='g4'?'selected':''}>📦 Set 16∼20 묶음 (70문항)</option>
+        <option value="g5" ${pref.vpSetFilter==='g5'?'selected':''}>📦 Set 21∼25 묶음 (70문항)</option>
+        <option value="g6" ${pref.vpSetFilter==='g6'?'selected':''}>📦 Set 26∼30 묶음 (70문항)</option>
+        <option value="g7" ${pref.vpSetFilter==='g7'?'selected':''}>📦 Set 31∼34 묶음 (56문항)</option>
+        ${Array.from({length:34}, (_,i)=>i+1).map(s => `<option value="s${s}" ${pref.vpSetFilter===`s${s}`?'selected':''}>Set ${s} 단어문제 (14문항)</option>`).join('')}
+      </select>
+      <input type="text" id="inpVPSearch" class="select-sm" placeholder="🔍 단어·뜻·문장·번호 검색..." value="${esc(vpSearchQuery)}" style="flex:1;min-width:150px">
+      <button type="button" class="btn small ghost" id="btnVPShuffle">${pref.vpShuffle ? '🔀 순서섞기 해제' : '🔀 순서 섞기'}</button>
+      <button type="button" class="btn small ghost" id="btnVPResetScreen" title="현재 화면의 풀이 선택 초기화">🔄 선택 초기화</button>
+    </div>
+  </div>`;
+
+  if (!filtered.length) {
+    html += `<div class="panel" style="text-align:center;padding:30px">
+      <div style="font-size:16px;font-weight:800;margin-bottom:8px">조건에 맞는 단어문제가 없습니다.</div>
+      <button type="button" class="btn small" id="btnVPClearFilter">전체 문제 보기</button>
+    </div>`;
+    view.innerHTML = html;
+    $('#btnVPClearFilter')?.addEventListener('click', () => {
+      pref.vpType = 'all'; pref.vpSetFilter = 'all'; pref.vpStFilter = 'all'; vpSearchQuery = ''; savePref(); render();
+    });
+    return;
+  }
+
+  if (pref.vpViewMode === 'card') {
+    const q = filtered[pref.vpIdx];
+    html += `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px">
+        <button type="button" class="btn small ghost" id="btnVPPrev" ${pref.vpIdx===0?'disabled':''}>◀ 이전</button>
+        <select id="selVPJump" class="select-sm" style="max-width:220px;font-weight:800">
+          ${filtered.map((item, idx) => {
+            const st = getVPState(item.id).st;
+            const mark = st === 2 ? '⭕ ' : (st === 1 ? '❌ ' : '');
+            return `<option value="${idx}" ${idx===pref.vpIdx?'selected':''}>${mark}#${item.num} (Set${item.set} ${item.type}) ${item.opts[0]?.w||''}...</option>`;
+          }).join('')}
+        </select>
+        <button type="button" class="btn small" id="btnVPNext" ${pref.vpIdx>=filtered.length-1?'disabled':''}>다음 ▶</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700">
+        진행: <b>${pref.vpIdx + 1}</b> / ${filtered.length}문항
+      </div>
+    </div>
+
+    ${renderVPCardHTML(q, pref.vpIdx, filtered.length)}
+
+    <div class="panel" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px;padding:10px">
+      <button type="button" class="btn ghost" id="btnVPBotPrev" ${pref.vpIdx===0?'disabled':''} style="justify-content:center;padding:11px 6px">◀ 이전</button>
+      <button type="button" class="btn" id="btnVPBotBad" style="background:#dc2626;justify-content:center;padding:11px 6px">❌ 몰라요·다음</button>
+      <button type="button" class="btn" id="btnVPBotOk" style="background:#16a34a;justify-content:center;padding:11px 6px">⭕ 외움·다음</button>
+      <button type="button" class="btn" id="btnVPBotNext" ${pref.vpIdx>=filtered.length-1?'disabled':''} style="justify-content:center;padding:11px 6px">다음 ▶</button>
+    </div>`;
+  } else {
+    const totalPages = Math.ceil(filtered.length / VP_PAGE_SIZE) || 1;
+    if (vpListPage > totalPages) vpListPage = totalPages;
+    const start = (vpListPage - 1) * VP_PAGE_SIZE;
+    const slice = filtered.slice(start, start + VP_PAGE_SIZE);
+
+    html += `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+      <span style="font-size:12.5px;color:var(--muted);font-weight:700">총 <b>${filtered.length}</b>문항 중 ${start+1}∼${Math.min(filtered.length, start+VP_PAGE_SIZE)}번 표시</span>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${Array.from({length: totalPages}, (_, i) => i + 1).map(p => `
+          <button type="button" class="f-chip ${p===vpListPage?'on':''}" data-vppage="${p}">${(p-1)*VP_PAGE_SIZE+1}∼${Math.min(filtered.length, p*VP_PAGE_SIZE)}</button>
+        `).join('')}
+      </div>
+    </div>
+    <div id="vpListContainer">
+      ${slice.map((q, idx) => renderVPCardHTML(q, start + idx, filtered.length)).join('')}
+    </div>
+    ${totalPages > 1 ? `
+      <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:14px 0">
+        ${Array.from({length: totalPages}, (_, i) => i + 1).map(p => `
+          <button type="button" class="f-chip ${p===vpListPage?'on':''}" data-vppage="${p}">${(p-1)*VP_PAGE_SIZE+1}∼${Math.min(filtered.length, p*VP_PAGE_SIZE)}</button>
+        `).join('')}
+      </div>
+    ` : ''}`;
+  }
+
+  view.innerHTML = html;
+
+  $('#btnVPModeCard')?.addEventListener('click', () => { pref.vpViewMode = 'card'; savePref(); render(); });
+  $('#btnVPModeList')?.addEventListener('click', () => { pref.vpViewMode = 'list'; vpListPage = 1; savePref(); render(); });
+  $('#btnVPRevealAll')?.addEventListener('click', () => { pref.vpRevealAll = !pref.vpRevealAll; savePref(); render(); });
+  $('#btnVPShuffle')?.addEventListener('click', () => {
+    pref.vpShuffle = pref.vpShuffle ? 0 : (Date.now() % 100000);
+    pref.vpIdx = 0; vpListPage = 1; savePref(); render();
+  });
+  $('#btnVPResetScreen')?.addEventListener('click', () => {
+    vpSession = {};
+    pref.vpRevealAll = false;
+    savePref();
+    render();
+  });
+
+  view.querySelectorAll('[data-vptype]').forEach(b => {
+    b.addEventListener('click', () => { pref.vpType = b.dataset.vptype; pref.vpIdx = 0; vpListPage = 1; savePref(); render(); });
+  });
+  view.querySelectorAll('[data-vpst]').forEach(b => {
+    b.addEventListener('click', () => { pref.vpStFilter = b.dataset.vpst; pref.vpIdx = 0; vpListPage = 1; savePref(); render(); });
+  });
+  $('#selVPSet')?.addEventListener('change', e => {
+    pref.vpSetFilter = e.target.value; pref.vpIdx = 0; vpListPage = 1; savePref(); render();
+  });
+  $('#inpVPSearch')?.addEventListener('input', e => {
+    vpSearchQuery = e.target.value;
+    pref.vpIdx = 0; vpListPage = 1;
+    render();
+    const inp = $('#inpVPSearch');
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  });
+
+  $('#selVPJump')?.addEventListener('change', e => {
+    pref.vpIdx = Number(e.target.value); savePref(); render();
+  });
+  const goPrev = () => { if (pref.vpIdx > 0) { pref.vpIdx--; savePref(); render(); window.scrollTo(0, 0); } };
+  const goNext = () => { if (pref.vpIdx < filtered.length - 1) { pref.vpIdx++; savePref(); render(); window.scrollTo(0, 0); } };
+  $('#btnVPPrev')?.addEventListener('click', goPrev);
+  $('#btnVPNext')?.addEventListener('click', goNext);
+  $('#btnVPBotPrev')?.addEventListener('click', goPrev);
+  $('#btnVPBotNext')?.addEventListener('click', goNext);
+  $('#btnVPBotBad')?.addEventListener('click', () => {
+    const q = filtered[pref.vpIdx];
+    if (q) saveVPState(q.id, { st: 1 });
+    if (pref.vpIdx < filtered.length - 1) pref.vpIdx++;
+    savePref(); render(); window.scrollTo(0, 0);
+  });
+  $('#btnVPBotOk')?.addEventListener('click', () => {
+    const q = filtered[pref.vpIdx];
+    if (q) saveVPState(q.id, { st: 2 });
+    if (pref.vpIdx < filtered.length - 1) pref.vpIdx++;
+    savePref(); render(); window.scrollTo(0, 0);
+  });
+
+  view.querySelectorAll('[data-vppage]').forEach(b => {
+    b.addEventListener('click', () => { vpListPage = Number(b.dataset.vppage); render(); window.scrollTo(0, 0); });
+  });
+
+  bindVPCardEvents(view, filtered);
+}
+
+function bindVPCardEvents(root, filtered) {
+  const qMap = {};
+  (M.vprobs || []).forEach(q => { qMap[q.id] = q; });
+
+  const rerenderOneOrAll = (qid) => {
+    if (pref.vpViewMode === 'list' && pref.vpStFilter === 'all') {
+      const cardEl = document.getElementById('vpcard_' + qid);
+      const q = qMap[qid];
+      if (cardEl && q) {
+        const idx = filtered.findIndex(item => item.id === qid);
+        const tmp = document.createElement('div');
+        tmp.innerHTML = renderVPCardHTML(q, idx >= 0 ? idx : 0, filtered.length);
+        const newCard = tmp.firstElementChild;
+        cardEl.replaceWith(newCard);
+        bindVPCardEvents(newCard, filtered);
+        return;
+      }
+    }
+    render();
+  };
+
+  const scope = root.matches && root.matches('.vp-card') ? [root] : root.querySelectorAll('.vp-card');
+  scope.forEach(card => {
+    card.querySelectorAll('[data-sp]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        speakWord(btn.dataset.sp, btn);
+      });
+    });
+    card.querySelectorAll('[data-vp-wst]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        setWordStatus(btn.dataset.vpWord, Number(btn.dataset.vpWst));
+        rerenderOneOrAll(card.id.replace(/^vpcard_/, ''));
+      });
+    });
+    card.querySelectorAll('[data-vp-pick]').forEach(optEl => {
+      optEl.addEventListener('click', () => {
+        const qid = optEl.dataset.vpPick;
+        const L = optEl.dataset.vpLet;
+        const q = qMap[qid];
+        if (!q) return;
+        handleVPChoiceTap(q, L);
+        rerenderOneOrAll(qid);
+      });
+    });
+    card.querySelectorAll('[data-vp-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const qid = btn.dataset.vpToggle;
+        const q = qMap[qid];
+        if (!q) return;
+        const sess = getVPSess(q);
+        if (sess.graded || pref.vpRevealAll) {
+          if (pref.vpRevealAll) pref.vpRevealAll = false;
+          resetVPSess(q);
+        } else {
+          sess.graded = true;
+          sess.revealedOnly = true;
+        }
+        rerenderOneOrAll(qid);
+      });
+    });
+    card.querySelectorAll('[data-vp-reset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const qid = btn.dataset.vpReset;
+        const q = qMap[qid];
+        if (!q) return;
+        if (pref.vpRevealAll) pref.vpRevealAll = false;
+        resetVPSess(q);
+        rerenderOneOrAll(qid);
+      });
+    });
+    card.querySelectorAll('[data-vp-star]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const qid = btn.dataset.vpStar;
+        const cur = getVPState(qid);
+        saveVPState(qid, { star: !cur.star });
+        rerenderOneOrAll(qid);
+      });
+    });
+    card.querySelectorAll('[data-vp-setst]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const qid = btn.dataset.vpSetst;
+        const st = Number(btn.dataset.st);
+        saveVPState(qid, { st });
+        rerenderOneOrAll(qid);
+      });
+    });
   });
 }
 
@@ -2559,7 +3301,7 @@ function openSyncModal() {
   `;
   $('#closeModal').addEventListener('click', () => ov.classList.add('hidden'));
   $('#btnExportAll').addEventListener('click', () => {
-    const payload = { exportedAt: new Date().toISOString(), prog, wStore, pref };
+    const payload = { exportedAt: new Date().toISOString(), prog, wStore, vprobStore, pref };
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'}));
     a.download = `GRE_단어장기록_${new Date().toISOString().slice(0,10)}.json`;
@@ -2574,6 +3316,7 @@ function openSyncModal() {
         const d = JSON.parse(r.result);
         if (d.prog) { prog = Object.assign(prog, d.prog); saveJSON(SK_PROG, prog); }
         if (d.wStore) { wStore = Object.assign(wStore, d.wStore); saveJSON(SK_WRITING, wStore); }
+        if (d.vprobStore) { vprobStore = Object.assign(vprobStore, d.vprobStore); saveJSON(SK_VPROB, vprobStore); }
         pushServerSync();
         alert('복원 완료!');
         ov.classList.add('hidden');
@@ -2591,6 +3334,7 @@ function render() {
   else if (pref.tab === 'list') renderListTab(v);
   else if (pref.tab === 'card') renderCardTab(v);
   else if (pref.tab === 'quiz') renderQuizTab(v);
+  else if (pref.tab === 'vprob') renderVProbTab(v);
   else if (pref.tab === 'writing') renderWritingTab(v);
 }
 
@@ -2603,6 +3347,12 @@ $$('.bottom-nav .nav-item').forEach(b => {
   });
 });
 
+$('#btnHeaderVProb')?.addEventListener('click', () => {
+  pref.tab = 'vprob';
+  savePref();
+  render();
+  window.scrollTo(0, 0);
+});
 $('#btnTheme').addEventListener('click', () => { pref.dark = !pref.dark; savePref(); updateHeader(); });
 $('#btnHeaderBlurMean')?.addEventListener('click', () => {
   pref.blurMean = !pref.blurMean;
@@ -2610,9 +3360,9 @@ $('#btnHeaderBlurMean')?.addEventListener('click', () => {
   savePref();
   render();
 });
-$('#btnSearchModal').addEventListener('click', openSearchModal);
-$('#btnSyncModal').addEventListener('click', openSyncModal);
-$('#modalOverlay').addEventListener('click', e => { if (e.target.id === 'modalOverlay') $('#modalOverlay').classList.add('hidden'); });
+$('#btnSearchModal')?.addEventListener('click', openSearchModal);
+$('#btnSyncModal')?.addEventListener('click', openSyncModal);
+$('#modalOverlay')?.addEventListener('click', e => { if (e.target.id === 'modalOverlay') $('#modalOverlay').classList.add('hidden'); });
 
 document.addEventListener('keydown', e => {
   if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
@@ -2634,6 +3384,14 @@ document.addEventListener('keydown', e => {
       if (btns[idx]) btns[idx].click();
     } else if (e.key === 'Enter' || e.key === ' ') {
       if ($('#btnNextQuiz')) { e.preventDefault(); $('#btnNextQuiz').click(); }
+    }
+  } else if (pref.tab === 'vprob' && pref.vpViewMode === 'card') {
+    if (e.key === 'ArrowRight') { e.preventDefault(); $('#btnVPNext')?.click(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); $('#btnVPPrev')?.click(); }
+    else if (e.key === ' ') {
+      e.preventDefault();
+      const tgl = document.querySelector('[data-vp-toggle]');
+      if (tgl) tgl.click();
     }
   }
 });
