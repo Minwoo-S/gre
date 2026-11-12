@@ -1679,29 +1679,26 @@ function buildVPPool(tp, sc) {
   });
 
   if (sc === "bad") {
-    const badOnly = shuffleVPArr(pool.filter(q => getVPState(q.id).st === 1));
+    const badOnly = pool.filter(q => getVPState(q.id).st === 1);
     if (badOnly.length > 0) pool = badOnly;
-    else pool = shuffleVPArr(pool);
-  } else if (sc === "unsolved_seq") {
-    const uns = pool.filter(q => getVPState(q.id).st === 0);
-    const rest = pool.filter(q => getVPState(q.id).st !== 0);
-    pool = uns.concat(rest);
   } else if (sc === "unsolved") {
-    const uns = shuffleVPArr(pool.filter(q => getVPState(q.id).st === 0));
-    const rest = shuffleVPArr(pool.filter(q => getVPState(q.id).st !== 0));
-    pool = uns.concat(rest);
+    const uns = pool.filter(q => getVPState(q.id).st === 0);
+    if (uns.length > 0) pool = uns;
+  } else if (sc === "unsolved_rand") {
+    const uns = pool.filter(q => getVPState(q.id).st === 0);
+    pool = shuffleVPArr(uns.length > 0 ? uns : pool);
   } else if (sc === "random") {
-    pool = shuffleVPArr(pool);
+    pool = seededShuffle(pool, Date.now() % 1000000);
   }
   return pool;
 }
 
 function startVPRun(customList) {
   const tp = pref.vpType || "all";
-  const sc = pref.vpScope || "unsolved";
+  const sc = pref.vpScope || "unsolved_rand";
   const cnt = Number(pref.vpCount) || 20;
 
-  const pool = customList ? shuffleVPArr(customList) : buildVPPool(tp, sc);
+  const pool = customList ? customList.slice() : buildVPPool(tp, sc);
   const list = pool.slice(0, cnt);
   if (!list.length) return;
   vpRun = {
@@ -1795,7 +1792,8 @@ function renderMonotoneOpt(q, opt, L, st) {
 function renderVProbTab(view) {
   const all = M.vprobs || [];
   if (!pref.vpType || !["all", "TC1", "TC23", "SE"].includes(pref.vpType)) pref.vpType = "all";
-  if (!pref.vpScope || !["unsolved", "unsolved_seq", "bad", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved";
+  if (pref.vpScope === "unsolved_seq") pref.vpScope = "unsolved";
+  if (!pref.vpScope || !["unsolved", "unsolved_rand", "bad", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved_rand";
   if (!pref.vpCount || ![10, 20, 30].includes(Number(pref.vpCount))) pref.vpCount = 20;
 
   // Compute stats
@@ -1926,15 +1924,13 @@ function renderVProbTab(view) {
 
     $("#btnVPMBack")?.addEventListener("click", () => { vpSubView = "home"; render(); window.scrollTo(0, 0); });
     $("#btnVPMShuffle")?.addEventListener("click", () => {
-      if (pref.vpScope === "unsolved_seq") {
-        pref.vpScope = "unsolved";
-        savePref();
-      }
+      pref.vpScope = "unsolved_rand";
+      savePref();
       const doneList = vpRun.list.slice(0, vpRun.idx);
       const doneIds = new Set(doneList.map(x => x.id));
       doneIds.add(q.id);
       const needCnt = vpRun.list.length - doneList.length;
-      const freshPool = buildVPPool(pref.vpType || "all", pref.vpScope === "unsolved_seq" ? "unsolved" : (pref.vpScope || "unsolved"))
+      const freshPool = buildVPPool(pref.vpType || "all", "unsolved_rand")
         .filter(x => !doneIds.has(x.id));
       const nextSlice = freshPool.slice(0, needCnt);
       if (nextSlice.length) {
@@ -2067,10 +2063,10 @@ function renderVProbTab(view) {
         <button type="button" class="vpm-pill ${pref.vpType==="SE"?"on":""}" data-vpm-type="SE">SE ${seTotal}</button>
       </div>
 
-      <div class="vpm-sec-lbl">범위 · 순서</div>
+      <div class="vpm-sec-lbl">범위</div>
       <div class="vpm-pills">
-        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved"?"on":""}" data-vpm-scope="unsolved">안 푼 문제 (랜덤)</button>
-        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved_seq"?"on":""}" data-vpm-scope="unsolved_seq">안 푼 문제 (순서대로)</button>
+        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved"?"on":""}" data-vpm-scope="unsolved">안 푼 문제 먼저</button>
+        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved_rand"?"on":""}" data-vpm-scope="unsolved_rand">안 푼 문제 랜덤</button>
         <button type="button" class="vpm-pill ${pref.vpScope==="bad"?"on":""}" data-vpm-scope="bad">틀린 문제만 ${badCnt}</button>
         <button type="button" class="vpm-pill ${pref.vpScope==="random"?"on":""}" data-vpm-scope="random">전부 랜덤</button>
       </div>
