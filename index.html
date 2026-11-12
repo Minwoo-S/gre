@@ -329,71 +329,242 @@ button { cursor: pointer; border: none; background: none; }
   max-height: 480px; overflow-y: auto;
 }
 
-/* Verbal Vocabulary Problem Drill UI (476 TC·SE Questions) */
-.vp-card {
-  background: var(--panel); border: 1.5px solid var(--line); border-radius: 14px;
-  padding: 15px 14px; margin-bottom: 12px; box-shadow: var(--shadow);
+/* Monotone Minimal GRE 빈칸·유의어 UI */
+body.vp-mono-mode {
+  background: #111312 !important;
+  color: #eef2ef !important;
 }
-.vp-card.st-ok { border-left: 6px solid #16a34a; }
-.vp-card.st-bad { border-left: 6px solid #dc2626; }
-.vp-stem {
-  font-family: Georgia, "Times New Roman", serif; font-size: 16.5px; line-height: 1.78;
-  color: var(--ink); background: var(--panel2); border: 1px solid var(--line);
-  border-radius: 12px; padding: 14px 15px; margin: 10px 0 13px;
+body.vp-mono-mode .app-header {
+  display: none !important;
 }
-.vp-blank {
-  display: inline-block; padding: 1px 8px; border-radius: 6px;
-  border-bottom: 2px solid var(--brand); background: var(--brand-bg); color: var(--brand);
-  font-weight: 800; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14px; margin: 0 2px; vertical-align: baseline;
+body.vp-mono-mode .container {
+  max-width: 520px;
+  padding: 22px 16px calc(84px + var(--safe-b));
 }
-.vp-blank.picking { background: #dbeafe; color: #1d4ed8; border-color: #2563eb; }
-.vp-blank.graded { background: var(--ok-bg); color: var(--ok); border-color: #16a34a; }
-.vp-opt-list { display: flex; flex-direction: column; gap: 7px; }
-.vp-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 9px; }
-.vp-cols.graded { grid-template-columns: 1fr; gap: 11px; }
-.vp-col-box {
-  background: var(--panel2); border: 1px solid var(--line); border-radius: 11px; padding: 9px;
+body.vp-mono-mode .bottom-nav {
+  background: #141715;
+  border-top: 1px solid #242926;
 }
-.vp-col-hdr {
-  font-size: 12px; font-weight: 800; color: var(--brand); margin-bottom: 6px; text-align: center;
+body.vp-mono-mode .bottom-nav .nav-item {
+  color: #7c8580;
 }
-.vp-opt {
-  width: 100%; text-align: left; padding: 10px 12px;
-  border: 2px solid var(--line); border-radius: 11px; background: var(--panel);
-  transition: all 0.12s; display: flex; flex-direction: column; gap: 3px;
-  cursor: pointer; user-select: none;
+body.vp-mono-mode .bottom-nav .nav-item.active {
+  color: #78c2a4;
 }
-.vp-opt:active { transform: scale(0.99); }
-.vp-opt.picked { border-color: var(--brand); background: var(--brand-bg); }
-.vp-opt.is-ans { border-color: #16a34a; background: var(--ok-bg); }
-.vp-opt.is-wrong { border-color: #dc2626; background: var(--bad-bg); }
-.vp-opt-top { display: flex; align-items: center; gap: 8px; width: 100%; flex-wrap: wrap; }
-.vp-let {
-  width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--muted);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800; flex-shrink: 0; color: var(--muted);
+.vpm-wrap {
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+  color: #eef2ef;
 }
-.vp-opt.picked .vp-let { background: var(--brand); border-color: var(--brand); color: #fff; }
-.vp-opt.is-ans .vp-let { background: #16a34a; border-color: #16a34a; color: #fff; }
-.vp-opt.is-wrong .vp-let { background: #dc2626; border-color: #dc2626; color: #fff; }
-.vp-word { font-size: 16px; font-weight: 800; color: var(--ink); word-break: break-word; }
-.vp-mean-row {
-  padding-left: 32px; font-size: 14.5px; font-weight: 800; color: var(--ink); line-height: 1.45;
+.vpm-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #f3f6f4;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
 }
-.vp-opt.is-ans .vp-mean-row { color: var(--ok); }
-.vp-opt.is-wrong .vp-mean-row { color: var(--bad); }
-.vp-syn-row {
-  padding-left: 32px; font-size: 12px; color: var(--brand2); line-height: 1.4;
+.vpm-sub {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #8a948e;
+  margin: 0 0 18px;
 }
-.vp-all6-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 6px; margin-top: 7px;
+.vpm-card {
+  background: #171a18;
+  border: 1px solid #262b28;
+  border-radius: 16px;
+  padding: 18px 16px;
+  margin-bottom: 14px;
 }
-.vp-all6-item {
-  padding: 7px 10px; border-radius: 9px; border: 1px solid var(--line);
-  background: var(--panel); font-size: 13px; line-height: 1.45;
+.vpm-sec-lbl {
+  font-size: 12.5px;
+  color: #8a948e;
+  margin: 0 0 8px;
+  font-weight: 500;
 }
-.vp-all6-item.ans { border-color: #16a34a; background: var(--ok-bg); }
+.vpm-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.vpm-pill {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid #2c322e;
+  background: #171a18;
+  color: #d5ddd8;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.12s;
+}
+.vpm-pill.on {
+  background: #78c2a4;
+  border-color: #78c2a4;
+  color: #0d2118;
+  font-weight: 700;
+}
+.vpm-btn-main {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: #78c2a4;
+  color: #0d2118;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 4px;
+}
+.vpm-btn-main:active { opacity: 0.88; }
+.vpm-btn-outline {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid #2d453b;
+  background: transparent;
+  color: #78c2a4;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: center;
+}
+.vpm-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #252a27;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.vpm-bar-fill {
+  height: 100%;
+  background: #78c2a4;
+  border-radius: 99px;
+}
+.vpm-stat-row {
+  display: grid;
+  grid-template-columns: 78px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  margin: 9px 0;
+}
+.vpm-stem {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17.5px;
+  line-height: 1.75;
+  color: #eef2ef;
+  margin: 12px 0 18px;
+}
+.vpm-blank {
+  display: inline-block;
+  min-width: 72px;
+  padding: 0 6px;
+  border-bottom: 1.5px solid #78c2a4;
+  color: #78c2a4;
+  font-weight: 700;
+  text-align: center;
+}
+.vpm-opt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vpm-opt {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 11px;
+  border: 1px solid #2a302c;
+  background: #1b1f1d;
+  color: #eef2ef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s;
+}
+.vpm-opt.picked {
+  border-color: #78c2a4;
+  background: rgba(120, 194, 164, 0.14);
+  color: #78c2a4;
+}
+.vpm-opt.ans {
+  border-color: #78c2a4;
+  background: rgba(120, 194, 164, 0.16);
+}
+.vpm-opt.wrong {
+  border-color: #e06c75;
+  background: rgba(224, 108, 117, 0.14);
+}
+.vpm-opt-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.vpm-opt-let {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid #454d48;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8a948e;
+  flex-shrink: 0;
+}
+.vpm-opt.picked .vpm-opt-let,
+.vpm-opt.ans .vpm-opt-let {
+  background: #78c2a4;
+  border-color: #78c2a4;
+  color: #0d2118;
+}
+.vpm-opt.wrong .vpm-opt-let {
+  background: #e06c75;
+  border-color: #e06c75;
+  color: #1a0b0c;
+}
+.vpm-opt-word {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #f1f5f3;
+}
+.vpm-opt.ans .vpm-opt-word {
+  color: #78c2a4;
+  font-weight: 700;
+}
+.vpm-opt.wrong .vpm-opt-word {
+  color: #e06c75;
+}
+.vpm-opt-mean {
+  font-size: 13.5px;
+  color: #b8c2bc;
+  text-align: right;
+  line-height: 1.35;
+}
+.vpm-opt.ans .vpm-opt-mean {
+  color: #78c2a4;
+  font-weight: 700;
+}
+.vpm-box {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: #141715;
+  border: 1px solid #262b28;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #d5ddd8;
+  white-space: pre-wrap;
+}
+.vpm-box-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #78c2a4;
+  margin-bottom: 4px;
+}
 </style>
 </head>
 <body>
@@ -686,6 +857,7 @@ function updateHeader() {
   const diff = Math.ceil((exam - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
   $('#ddayBadge').textContent = diff > 0 ? `11/15 시험 D-${diff}` : (diff === 0 ? '🔥 D-Day!' : `D+${Math.abs(diff)}`);
   document.body.classList.toggle('dark', !!pref.dark);
+  document.body.classList.toggle('vp-mono-mode', pref.tab === 'vprob');
   $('#btnTheme').textContent = pref.dark ? '☀️' : '🌙';
   const hbm = $('#btnHeaderBlurMean');
   if (hbm) {
@@ -968,13 +1140,13 @@ function renderPlanTab(view) {
   bindTrackBar(view);
 
   $('#btnGoVProbAll')?.addEventListener('click', () => {
-    pref.vpType = 'all'; pref.vpSetFilter = 'all'; pref.vpStFilter = 'all'; pref.vpIdx = 0; pref.tab = 'vprob'; savePref(); render();
+    pref.vpType = 'all'; vpSubView = 'home'; pref.tab = 'vprob'; savePref(); render();
   });
   $('#btnGoVProbSE')?.addEventListener('click', () => {
-    pref.vpType = 'SE'; pref.vpSetFilter = 'all'; pref.vpStFilter = 'all'; pref.vpIdx = 0; pref.tab = 'vprob'; savePref(); render();
+    pref.vpType = 'SE'; vpSubView = 'home'; pref.tab = 'vprob'; savePref(); render();
   });
   $('#btnGoVProbCN')?.addEventListener('click', () => {
-    pref.vpType = 'all'; pref.vpSetFilter = 'cn'; pref.vpStFilter = 'all'; pref.vpIdx = 0; pref.tab = 'vprob'; savePref(); render();
+    pref.vpType = 'TC23'; vpSubView = 'home'; pref.tab = 'vprob'; savePref(); render();
   });
   $('#btnStartTonightList').addEventListener('click', () => {
     pref.track = 'kang'; pref.day = 0; pref.sessionPart = 0; pref.stFilter = 'all'; pref.tab = 'list'; savePref(); render();
@@ -1443,628 +1615,460 @@ function renderQuizTab(view) {
   });
 }
 
-/* ---------- TAB 4.5: VERBAL VOCABULARY PROBLEMS (476 TC·SE QUESTIONS) ---------- */
-let vpSession = {};
-let vpSearchQuery = '';
-let vpListPage = 1;
-const VP_PAGE_SIZE = 30;
+/* ---------- TAB 4.5: VERBAL VOCABULARY PROBLEMS (MONOTONE MINIMAL UI) ---------- */
+let vpSubView = "home"; // "home" | "solve" | "wrong" | "result"
+let vpRun = null;       // { list: [...], idx: 0, answers: { qid: { picked, graded, ok } } }
 
 function getVPState(qid) {
-  return vprobStore[qid] || { st: 0, star: false, ans: '', ok: false };
+  return vprobStore[qid] || { st: 0, star: false, ans: "", ok: false };
 }
 function saveVPState(qid, patch) {
-  const cur = Object.assign({ st: 0, star: false, ans: '', ok: false }, vprobStore[qid] || {}, patch, { t: Date.now() });
+  const cur = Object.assign({ st: 0, star: false, ans: "", ok: false }, vprobStore[qid] || {}, patch, { t: Date.now() });
   vprobStore[qid] = cur;
   saveJSON(SK_VPROB, vprobStore);
   pushServerSync();
 }
-function getVPSess(q) {
-  if (!vpSession[q.id]) {
-    vpSession[q.id] = {
-      picked: q.type === 'SE' ? [] : (q.blanks === 1 ? '' : Array(q.blanks).fill('')),
-      graded: false,
-      revealedOnly: false
-    };
-  }
-  return vpSession[q.id];
-}
-function resetVPSess(q) {
-  vpSession[q.id] = {
-    picked: q.type === 'SE' ? [] : (q.blanks === 1 ? '' : Array(q.blanks).fill('')),
-    graded: false,
-    revealedOnly: false
-  };
-}
-function getFilteredVProbs() {
+
+function startVPRun(customList) {
   const all = M.vprobs || [];
-  let arr = all.filter(q => {
-    if (pref.vpType === 'SE' && q.type !== 'SE') return false;
-    if (pref.vpType === 'TC' && q.type !== 'TC') return false;
-    if (pref.vpType === 'TC1' && !(q.type === 'TC' && q.blanks === 1)) return false;
-    if (pref.vpType === 'TC2' && !(q.type === 'TC' && q.blanks === 2)) return false;
-    if (pref.vpType === 'TC3' && !(q.type === 'TC' && q.blanks === 3)) return false;
+  const tp = pref.vpType || "all";
+  const sc = pref.vpScope || "unsolved";
+  const cnt = Number(pref.vpCount) || 20;
 
-    const sf = pref.vpSetFilter || 'all';
-    if (sf === 'cn') {
-      if (!(q.src && q.src.includes('후기'))) return false;
-    } else if (sf.startsWith('g')) {
-      const g = Number(sf.slice(1));
-      const minS = (g - 1) * 5 + 1;
-      const maxS = g * 5;
-      if (q.set < minS || q.set > maxS) return false;
-    } else if (sf.startsWith('s')) {
-      const sNo = Number(sf.slice(1));
-      if (q.set !== sNo) return false;
-    }
-
-    const stObj = getVPState(q.id);
-    if (pref.vpStFilter === 'unsolved' && stObj.st !== 0) return false;
-    if (pref.vpStFilter === 'bad' && stObj.st !== 1) return false;
-    if (pref.vpStFilter === 'ok' && stObj.st !== 2) return false;
-    if (pref.vpStFilter === 'star' && !stObj.star) return false;
-
-    if (vpSearchQuery.trim()) {
-      const kw = vpSearchQuery.trim().toLowerCase();
-      const inStem = q.stem.toLowerCase().includes(kw) || (q.src || '').toLowerCase().includes(kw) || String(q.num) === kw;
-      const inOpts = (q.opts || []).some(o => o.w.toLowerCase().includes(kw) || (o.m || '').toLowerCase().includes(kw) || (o.s || '').toLowerCase().includes(kw));
-      if (!inStem && !inOpts) return false;
-    }
+  let pool = customList ? customList.slice() : all.filter(q => {
+    if (tp === "TC1") return q.type === "TC" && q.blanks === 1;
+    if (tp === "TC23") return q.type === "TC" && q.blanks >= 2;
+    if (tp === "SE") return q.type === "SE";
     return true;
   });
-  if (pref.vpShuffle > 0) {
-    arr = seededShuffle(arr, pref.vpShuffle);
+
+  if (!customList) {
+    if (sc === "bad") {
+      const badOnly = pool.filter(q => getVPState(q.id).st === 1);
+      if (badOnly.length > 0) pool = badOnly;
+    } else if (sc === "unsolved") {
+      const uns = pool.filter(q => getVPState(q.id).st === 0);
+      const rest = pool.filter(q => getVPState(q.id).st !== 0);
+      pool = uns.concat(rest);
+    } else if (sc === "random") {
+      pool = seededShuffle(pool, Date.now() % 1000000);
+    }
   }
-  return arr;
+
+  const list = pool.slice(0, cnt);
+  if (!list.length) return;
+  vpRun = {
+    list,
+    idx: 0,
+    answers: {}
+  };
+  vpSubView = "solve";
+  render();
+  window.scrollTo(0, 0);
 }
 
-function formatVPStem(q, sess, isGraded) {
-  const letters = 'ABCDEFGHI';
-  let blankIdx = 0;
+function getVPRunItemState(q) {
+  if (!vpRun.answers[q.id]) {
+    vpRun.answers[q.id] = {
+      picked: q.type === "SE" ? [] : (q.blanks === 1 ? "" : Array(q.blanks).fill("")),
+      graded: false,
+      ok: false
+    };
+  }
+  return vpRun.answers[q.id];
+}
+
+function isVPReadyToSubmit(q, st) {
+  if (q.type === "SE") return Array.isArray(st.picked) && st.picked.length === 2;
+  if (q.blanks === 1) return !!st.picked;
+  return Array.isArray(st.picked) && st.picked.length === q.blanks && st.picked.every(Boolean);
+}
+
+function formatMonotoneStem(q, st) {
+  const letters = "ABCDEFGHI";
+  let bIdx = 0;
   return esc(q.stem).replace(/_{3,}/g, () => {
-    const bIdx = blankIdx++;
-    if (isGraded) {
-      if (q.type === 'SE') {
-        const ansOpts = q.answer.split('').map(L => q.opts[letters.indexOf(L)]).filter(Boolean);
-        const wStr = ansOpts.map(o => o.w).join(' / ');
-        const mStr = ansOpts[0]?.m || '';
-        return `<span class="vp-blank graded">[ ${esc(wStr)} <small style="font-weight:700;opacity:0.9">(${esc(mStr)})</small> ]</span>`;
+    const cur = bIdx++;
+    if (st.graded) {
+      if (q.type === "SE") {
+        const w = q.answer.split("").map(L => q.opts[letters.indexOf(L)]?.w || L).join(" / ");
+        return `<span class="vpm-blank">${esc(w)}</span>`;
       } else if (q.blanks === 1) {
-        const ansOpt = q.opts[letters.indexOf(q.answer)];
-        return `<span class="vp-blank graded">[ ${esc(ansOpt?.w || q.answer)} <small style="font-weight:700;opacity:0.9">(${esc(ansOpt?.m || '')})</small> ]</span>`;
+        const w = q.opts[letters.indexOf(q.answer)]?.w || q.answer;
+        return `<span class="vpm-blank">${esc(w)}</span>`;
       } else {
-        const ansL = q.answer[bIdx];
-        const ansOpt = q.opts[letters.indexOf(ansL)];
-        return `<span class="vp-blank graded">[ ${esc(ansOpt?.w || ansL)} <small style="font-weight:700;opacity:0.9">(${esc(ansOpt?.m || '')})</small> ]</span>`;
+        const L = q.answer[cur];
+        const w = q.opts[letters.indexOf(L)]?.w || L;
+        return `<span class="vpm-blank">${esc(w)}</span>`;
       }
     } else {
-      if (q.type === 'SE') {
-        const pk = sess.picked || [];
-        if (pk.length === 0) return `<span class="vp-blank">[ 동의어 2개 선택 ]</span>`;
-        const w0 = q.opts[letters.indexOf(pk[0])]?.w || pk[0];
-        return `<span class="vp-blank picking">[ ${esc(w0)} / (1개 더 선택) ]</span>`;
+      if (q.type === "SE") {
+        const pk = st.picked || [];
+        if (!pk.length) return `<span class="vpm-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
+        const w = pk.map(L => q.opts[letters.indexOf(L)]?.w || L).join(" / ");
+        return `<span class="vpm-blank">${esc(w)}</span>`;
       } else if (q.blanks === 1) {
-        return `<span class="vp-blank">[ 단어 1개 선택 ]</span>`;
+        if (!st.picked) return `<span class="vpm-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
+        const w = q.opts[letters.indexOf(st.picked)]?.w || st.picked;
+        return `<span class="vpm-blank">${esc(w)}</span>`;
       } else {
-        const pkL = (sess.picked || [])[bIdx];
-        if (!pkL) return `<span class="vp-blank">[ 빈칸 (${['i','ii','iii'][bIdx]}) 선택 ]</span>`;
-        const w = q.opts[letters.indexOf(pkL)]?.w || pkL;
-        return `<span class="vp-blank picking">[ ${esc(w)} ]</span>`;
+        const L = (st.picked || [])[cur];
+        if (!L) return `<span class="vpm-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>`;
+        const w = q.opts[letters.indexOf(L)]?.w || L;
+        return `<span class="vpm-blank">${esc(w)}</span>`;
       }
     }
   });
 }
 
-function renderVPOptButton(q, opt, L, sess, isGraded) {
+function renderMonotoneOpt(q, opt, L, st) {
   const isAns = q.answer.includes(L);
-  let isPicked = false;
-  if (q.type === 'SE') isPicked = (sess.picked || []).includes(L);
-  else if (q.blanks === 1) isPicked = (sess.picked === L);
-  else isPicked = (sess.picked || []).includes(L);
+  const isPicked = q.type === "SE"
+    ? (st.picked || []).includes(L)
+    : (q.blanks === 1 ? st.picked === L : (st.picked || []).includes(L));
 
-  let cls = 'vp-opt';
-  if (isGraded) {
-    if (isAns) cls += ' is-ans';
-    else if (isPicked) cls += ' is-wrong';
+  let cls = "vpm-opt";
+  if (st.graded) {
+    if (isAns) cls += " ans";
+    else if (isPicked) cls += " wrong";
   } else if (isPicked) {
-    cls += ' picked';
+    cls += " picked";
   }
-
-  const wState = getWordState(opt.w);
-  return `
-  <div class="${cls}" data-vp-pick="${esc(q.id)}" data-vp-let="${L}">
-    <div class="vp-opt-top">
-      <span class="vp-let">${L}</span>
-      <span class="vp-word">${esc(opt.w)}</span>
-      ${isGraded && opt.p ? `<span style="font-size:12px;color:var(--muted)">${esc(opt.p)}</span>` : ''}
-      <button type="button" data-sp="${esc(opt.w)}" style="font-size:13px;padding:2px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line)" title="발음 듣기">🔊</button>
-      ${isGraded && opt.f ? `<span class="badge freq" style="font-size:10.5px;padding:1px 6px">강쌤 ${opt.f}회</span>` : ''}
-      ${isGraded && isAns ? `<span class="badge" style="background:#16a34a;color:#fff;font-size:11px">⭕ 정답</span>` : ''}
-      ${isGraded && !isAns && isPicked ? `<span class="badge" style="background:#dc2626;color:#fff;font-size:11px">❌ 내 선택</span>` : ''}
-      ${!isGraded && isPicked ? `<span class="badge" style="background:var(--brand);color:#fff;font-size:11px">선택됨</span>` : ''}
-      ${isGraded ? `
-        <span style="margin-left:auto;display:inline-flex;gap:3px" data-vp-stop="1">
-          <button type="button" class="st-dot d-bad ${wState.st===1?'on':''}" data-vp-wst="1" data-vp-word="${esc(opt.w)}" style="width:24px;height:24px;font-size:11px" title="모르는 단어로 체크">❌</button>
-          <button type="button" class="st-dot d-warn ${wState.st===2?'on':''}" data-vp-wst="2" data-vp-word="${esc(opt.w)}" style="width:24px;height:24px;font-size:11px" title="헷갈리는 단어로 체크">🔺</button>
-          <button type="button" class="st-dot d-ok ${wState.st===3?'on':''}" data-vp-wst="3" data-vp-word="${esc(opt.w)}" style="width:24px;height:24px;font-size:11px" title="외운 단어로 체크">⭕</button>
-        </span>
-      ` : ''}
-    </div>
-    ${isGraded ? `
-      <div class="vp-mean-row">→ ${esc(opt.m || '')}</div>
-      ${opt.s ? `<div class="vp-syn-row">🔗 동의어: ${esc(opt.s)}</div>` : ''}
-    ` : ''}
-  </div>`;
-}
-
-function renderVPCardHTML(q, posIdx, totalCnt) {
-  const letters = 'ABCDEFGHI';
-  const sess = getVPSess(q);
-  const isGraded = !!(sess.graded || pref.vpRevealAll);
-  const stObj = getVPState(q.id);
-
-  let myAnsStr = '';
-  if (q.type === 'SE') myAnsStr = (sess.picked || []).slice().sort().join('');
-  else if (q.blanks === 1) myAnsStr = sess.picked || '';
-  else myAnsStr = (sess.picked || []).join('');
-  const isCorrect = myAnsStr === q.answer;
-
-  const typeLabel = q.type === 'SE'
-    ? 'SE · 동의어 2개 선택 (6지선다)'
-    : `TC · ${q.blanks}빈칸 추론 (${q.opts.length}개 단어)`;
-
-  let choicesHTML = '';
-  if (q.type === 'SE' || q.blanks === 1) {
-    choicesHTML = `<div class="vp-opt-list">
-      ${q.opts.map((opt, i) => renderVPOptButton(q, opt, letters[i], sess, isGraded)).join('')}
-    </div>`;
-  } else {
-    const cols = [];
-    for (let c = 0; c < q.blanks; c++) {
-      const subOpts = q.opts.slice(c * 3, c * 3 + 3);
-      cols.push(`
-      <div class="vp-col-box">
-        <div class="vp-col-hdr">Blank (${['i','ii','iii'][c]}) 단어 선택</div>
-        <div class="vp-opt-list">
-          ${subOpts.map((opt, r) => renderVPOptButton(q, opt, letters[c * 3 + r], sess, isGraded)).join('')}
-        </div>
-      </div>`);
-    }
-    choicesHTML = `<div class="vp-cols ${isGraded ? 'graded' : ''}">${cols.join('')}</div>`;
-  }
-
-  const ansDesc = q.answer.split('').map(L => {
-    const o = q.opts[letters.indexOf(L)];
-    return o ? `${L} (${o.w}: ${o.m})` : L;
-  }).join(' · ');
-
-  const stemExtraEntries = Object.entries(q.stem_g || {});
 
   return `
-  <div class="vp-card ${stObj.st===2?'st-ok':(stObj.st===1?'st-bad':'')}" id="vpcard_${esc(q.id)}">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span class="badge" style="background:#0f172a;color:#fff;font-size:12px">#${q.num} <span style="opacity:0.75;font-weight:500">(${posIdx+1}/${totalCnt})</span></span>
-        <span class="badge" style="background:var(--panel2);color:var(--ink);border:1px solid var(--line)">Set ${q.set} · S${q.sec}-Q${q.qno}</span>
-        <span class="badge" style="background:${q.type==='SE'?'#ede9fe':'#e0f2fe'};color:${q.type==='SE'?'#5b21b6':'#0369a1'}">${typeLabel}</span>
-        ${q.src ? `<span class="badge freq">${esc(q.src)}</span>` : ''}
-        ${stObj.st === 2 ? `<span class="badge" style="background:var(--ok-bg);color:var(--ok)">⭕ 외움·정답</span>` : ''}
-        ${stObj.st === 1 ? `<span class="badge" style="background:var(--bad-bg);color:var(--bad)">❌ 복습필요</span>` : ''}
-      </div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <button type="button" class="btn small ghost" data-vp-toggle="${esc(q.id)}" style="padding:4px 9px;font-size:12px">
-          ${isGraded ? '🔄 뜻 가리고 다시 풀기' : '👁️ 바로 채점·6개 단어뜻 보기'}
-        </button>
-        <button type="button" class="st-dot d-star ${stObj.star?'on':''}" data-vp-star="${esc(q.id)}" title="별표 문제 체크">⭐</button>
-      </div>
+  <button type="button" class="${cls}" data-vpm-pick="${L}">
+    <div class="vpm-opt-left">
+      <span class="vpm-opt-let">${L}</span>
+      <span class="vpm-opt-word">${esc(opt.w)}</span>
     </div>
-
-    <div class="vp-stem">${formatVPStem(q, sess, isGraded)}</div>
-
-    ${!isGraded ? `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12.5px;color:var(--brand);font-weight:700;flex-wrap:wrap;gap:6px">
-        <span>${q.type === 'SE'
-          ? `👆 아래 6개 단어 중 동의어 2개를 선택하세요 (${(sess.picked||[]).length}/2 선택됨 · 2개 선택 즉시 채점)`
-          : (q.blanks === 1
-              ? '👆 아래 5개 단어 중 정답 1개를 선택하세요 (터치 즉시 채점)'
-              : `👆 각 빈칸마다 단어를 1개씩 선택하세요 (${(sess.picked||[]).filter(Boolean).length}/${q.blanks} 선택됨 · 모두 선택 시 즉시 채점)`)}</span>
-      </div>
-    ` : ''}
-
-    ${choicesHTML}
-
-    ${isGraded ? `
-      <div style="margin-top:12px;padding:11px 13px;border-radius:11px;border:1.5px solid ${sess.revealedOnly || pref.vpRevealAll ? 'var(--brand)' : (isCorrect ? '#16a34a' : '#dc2626')};background:${sess.revealedOnly || pref.vpRevealAll ? 'var(--brand-bg)' : (isCorrect ? 'var(--ok-bg)' : 'var(--bad-bg)')}">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-          <div style="font-size:14.5px;font-weight:800;color:${sess.revealedOnly || pref.vpRevealAll ? 'var(--brand)' : (isCorrect ? 'var(--ok)' : 'var(--bad)')}">
-            ${sess.revealedOnly || pref.vpRevealAll
-              ? `🔓 정답: ${esc(ansDesc)}`
-              : (isCorrect
-                  ? `⭕ 정답입니다! — ${esc(ansDesc)}`
-                  : `❌ 오답입니다 (내 선택: ${esc(myAnsStr || '없음')}) → 정답: ${esc(ansDesc)}`)}
-          </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button type="button" class="btn small ghost" data-vp-reset="${esc(q.id)}" style="background:var(--panel);padding:4px 9px;font-size:12px">🔄 다시 선택해보기</button>
-            <button type="button" class="btn small" data-vp-setst="${esc(q.id)}" data-st="1" style="background:#dc2626;padding:4px 9px;font-size:12px">❌ 또 볼 문제</button>
-            <button type="button" class="btn small" data-vp-setst="${esc(q.id)}" data-st="2" style="background:#16a34a;padding:4px 9px;font-size:12px">⭕ 완벽 암기</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="fc-box" style="margin-top:9px;background:var(--panel2)">
-        <div class="lbl" style="font-size:12px;color:var(--brand)">📖 이 문제의 보기 ${q.opts.length}개 단어 뜻 한눈에 외우기 ${stemExtraEntries.length ? `+ 문장 핵심 어휘 (${stemExtraEntries.length}개)` : ''}</div>
-        <div class="vp-all6-grid">
-          ${q.opts.map((o, idx) => {
-            const L = letters[idx];
-            const ans = q.answer.includes(L);
-            return `<div class="vp-all6-item ${ans?'ans':''}">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
-                <span><b>[${L}] ${esc(o.w)}</b> ${ans?'<span style="color:#16a34a;font-weight:800">★정답</span>':''}</span>
-                <button type="button" data-sp="${esc(o.w)}" style="font-size:12px">🔊</button>
-              </div>
-              <div style="font-weight:800;color:${ans?'var(--ok)':'var(--ink)'};margin-top:2px">${esc(o.m)}</div>
-              ${o.s ? `<div style="font-size:11.5px;color:var(--brand2);margin-top:2px">동의어: ${esc(o.s)}</div>` : ''}
-            </div>`;
-          }).join('')}
-          ${stemExtraEntries.map(([kw, km]) => `
-            <div class="vp-all6-item" style="border-style:dashed">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
-                <span><b style="color:var(--brand)">[문장단어] ${esc(kw)}</b></span>
-                <button type="button" data-sp="${esc(kw)}" style="font-size:12px">🔊</button>
-              </div>
-              <div style="font-weight:800;color:var(--ink);margin-top:2px">${esc(km)}</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-
-      ${q.explanation ? `
-        <div class="fc-box" style="margin-top:8px;white-space:pre-wrap;font-size:13.5px;line-height:1.6">
-          <div class="lbl" style="font-size:12px;color:#0f766e">💡 문장 단서 & 정답 해설</div>${esc(q.explanation)}
-        </div>
-      ` : ''}
-      ${q.trap ? `
-        <div class="fc-box" style="margin-top:8px;white-space:pre-wrap;font-size:13px;line-height:1.55;background:var(--bad-bg);border-color:rgba(220,38,38,0.25)">
-          <div class="lbl" style="font-size:12px;color:var(--bad)">⚠️ 매력적 오답 & 함정 주의</div>${esc(q.trap)}
-        </div>
-      ` : ''}
-    ` : ''}
-  </div>`;
-}
-
-function handleVPChoiceTap(q, L) {
-  const sess = getVPSess(q);
-  const letters = 'ABCDEFGHI';
-  if (sess.graded || pref.vpRevealAll) {
-    const opt = q.opts[letters.indexOf(L)];
-    if (opt) speakWord(opt.w);
-    return;
-  }
-  sess.revealedOnly = false;
-  if (q.type === 'SE') {
-    const pk = sess.picked || [];
-    const idx = pk.indexOf(L);
-    if (idx !== -1) {
-      pk.splice(idx, 1);
-    } else if (pk.length < 2) {
-      pk.push(L);
-    }
-    sess.picked = pk;
-    if (pk.length === 2) {
-      sess.graded = true;
-      const myKey = pk.slice().sort().join('');
-      const ok = (myKey === q.answer);
-      saveVPState(q.id, { st: ok ? 2 : 1, ans: myKey, ok });
-    }
-  } else if (q.blanks === 1) {
-    sess.picked = L;
-    sess.graded = true;
-    const ok = (L === q.answer);
-    saveVPState(q.id, { st: ok ? 2 : 1, ans: L, ok });
-  } else {
-    const pk = Array.isArray(sess.picked) ? sess.picked : Array(q.blanks).fill('');
-    const colIdx = Math.floor(letters.indexOf(L) / 3);
-    if (colIdx >= 0 && colIdx < q.blanks) {
-      pk[colIdx] = (pk[colIdx] === L) ? '' : L;
-    }
-    sess.picked = pk;
-    if (pk.every(Boolean)) {
-      sess.graded = true;
-      const myKey = pk.join('');
-      const ok = (myKey === q.answer);
-      saveVPState(q.id, { st: ok ? 2 : 1, ans: myKey, ok });
-    }
-  }
+    ${st.graded ? `<div class="vpm-opt-mean">${esc(opt.m || "")}</div>` : ""}
+  </button>`;
 }
 
 function renderVProbTab(view) {
   const all = M.vprobs || [];
-  const filtered = getFilteredVProbs();
+  if (!pref.vpType || !["all", "TC1", "TC23", "SE"].includes(pref.vpType)) pref.vpType = "all";
+  if (!pref.vpScope || !["unsolved", "bad", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved";
+  if (!pref.vpCount || ![10, 20, 30].includes(Number(pref.vpCount))) pref.vpCount = 20;
 
-  let okCnt = 0, badCnt = 0, starCnt = 0;
+  // Compute stats
+  let solvedCnt = 0, okCnt = 0, badCnt = 0;
+  let tc1Total = 0, tc1Ok = 0, tc1Solved = 0;
+  let tc23Total = 0, tc23Ok = 0, tc23Solved = 0;
+  let seTotal = 0, seOk = 0, seSolved = 0;
+
   all.forEach(q => {
     const s = getVPState(q.id);
-    if (s.st === 2) okCnt++;
-    else if (s.st === 1) badCnt++;
-    if (s.star) starCnt++;
+    const solved = s.st === 1 || s.st === 2;
+    const isOk = s.st === 2;
+    if (solved) solvedCnt++;
+    if (isOk) okCnt++;
+    if (s.st === 1) badCnt++;
+
+    if (q.type === "TC" && q.blanks === 1) {
+      tc1Total++;
+      if (solved) tc1Solved++;
+      if (isOk) tc1Ok++;
+    } else if (q.type === "TC" && q.blanks >= 2) {
+      tc23Total++;
+      if (solved) tc23Solved++;
+      if (isOk) tc23Ok++;
+    } else if (q.type === "SE") {
+      seTotal++;
+      if (solved) seSolved++;
+      if (isOk) seOk++;
+    }
   });
-  const unsolvedCnt = all.length - okCnt - badCnt;
 
-  if (pref.vpIdx >= filtered.length) pref.vpIdx = Math.max(0, filtered.length - 1);
-  if (pref.vpIdx < 0) pref.vpIdx = 0;
+  const solvedPct = all.length ? Math.round((solvedCnt / all.length) * 100) : 0;
+  const accPct = solvedCnt ? Math.round((okCnt / solvedCnt) * 100) : 0;
+  const tc1Pct = tc1Solved ? Math.round((tc1Ok / tc1Solved) * 100) : 0;
+  const tc23Pct = tc23Solved ? Math.round((tc23Ok / tc23Solved) * 100) : 0;
+  const sePct = seSolved ? Math.round((seOk / seSolved) * 100) : 0;
 
-  let html = `
-  <div class="panel" style="padding:12px 13px;margin-bottom:10px">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:9px">
-      <div>
-        <div style="font-size:16px;font-weight:900">🧩 버벌 단어문제 476문항 (SE 238 + TC 238) 통암기</div>
-        <div style="font-size:12px;color:var(--muted)">단어를 고르면 즉시 채점되고 보기 6개(전체) 단어의 한국어 뜻·동의어·해설이 펼쳐집니다.</div>
+  if (vpSubView === "solve" && vpRun && vpRun.list.length) {
+    const q = vpRun.list[vpRun.idx];
+    const st = getVPRunItemState(q);
+    const letters = "ABCDEFGHI";
+    const ready = isVPReadyToSubmit(q, st);
+    const typeName = q.type === "SE" ? "SE 유의어 (2개 선택)" : `TC ${q.blanks}빈칸`;
+
+    let choicesHTML = "";
+    if (q.type === "SE" || q.blanks === 1) {
+      choicesHTML = `<div class="vpm-opt-list">
+        ${q.opts.map((opt, i) => renderMonotoneOpt(q, opt, letters[i], st)).join("")}
+      </div>`;
+    } else {
+      const blocks = [];
+      for (let c = 0; c < q.blanks; c++) {
+        const sub = q.opts.slice(c * 3, c * 3 + 3);
+        blocks.push(`
+          <div style="margin-bottom:12px">
+            <div class="vpm-sec-lbl" style="margin-bottom:6px">Blank (${["i","ii","iii"][c]})</div>
+            <div class="vpm-opt-list">
+              ${sub.map((opt, r) => renderMonotoneOpt(q, opt, letters[c * 3 + r], st)).join("")}
+            </div>
+          </div>
+        `);
+      }
+      choicesHTML = blocks.join("");
+    }
+
+    const stemExtras = Object.entries(q.stem_g || {});
+
+    view.innerHTML = `
+    <div class="vpm-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13.5px;color:#8a948e">
+        <button type="button" id="btnVPMBack" style="color:#d5ddd8;font-weight:600;padding:4px 0">← 나가기</button>
+        <div><b style="color:#f1f5f3">${vpRun.idx + 1}</b> / ${vpRun.list.length} · ${typeName}</div>
       </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button type="button" class="btn small ${pref.vpViewMode==='card'?'':'ghost'}" id="btnVPModeCard">📱 1문제씩 풀기</button>
-        <button type="button" class="btn small ${pref.vpViewMode==='list'?'':'ghost'}" id="btnVPModeList">📋 연속 스크롤</button>
-        <button type="button" class="btn small ${pref.vpRevealAll?'':'ghost'}" id="btnVPRevealAll" style="${pref.vpRevealAll?'background:#e11d48;border-color:#e11d48':''}">
-          ${pref.vpRevealAll ? '🔓 통암기(정답·뜻 다 펼침) ON' : '🔒 풀기모드 (채점 후 뜻 공개)'}
-        </button>
+      <div class="vpm-bar-track" style="margin-bottom:16px">
+        <div class="vpm-bar-fill" style="width:${((vpRun.idx + 1) / vpRun.list.length) * 100}%"></div>
       </div>
-    </div>
 
-    <div class="filter-bar" style="margin-bottom:7px">
-      ${[
-        ['all', `전체 (${all.length})`],
-        ['SE', 'SE 동의어 2개선택 (238)'],
-        ['TC', 'TC 빈칸추론 전체 (238)'],
-        ['TC1', 'TC 1빈칸 (68)'],
-        ['TC2', 'TC 2빈칸·6단어 (97)'],
-        ['TC3', 'TC 3빈칸·9단어 (73)']
-      ].map(([k, lbl]) => `<button type="button" class="f-chip ${pref.vpType===k?'on':''}" data-vptype="${k}">${lbl}</button>`).join('')}
-    </div>
+      <div class="vpm-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#7c8580">
+          <span>Set ${q.set} · #${q.num}</span>
+          <span>${esc(q.src || "")}</span>
+        </div>
 
-    <div class="filter-bar" style="margin-bottom:7px">
-      ${[
-        ['all', `전체 (${all.length})`],
-        ['unsolved', `🆕 안 푼 문제 (${unsolvedCnt})`],
-        ['bad', `❌ 오답·복습 (${badCnt})`],
-        ['star', `⭐ 별표 (${starCnt})`],
-        ['ok', `⭕ 외움·정답 (${okCnt})`]
-      ].map(([k, lbl]) => `<button type="button" class="f-chip ${pref.vpStFilter===k?'on':''}" data-vpst="${k}">${lbl}</button>`).join('')}
-    </div>
+        <div class="vpm-stem">${formatMonotoneStem(q, st)}</div>
 
-    <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
-      <select id="selVPSet" class="select-sm" style="flex:1;min-width:150px">
-        <option value="all" ${pref.vpSetFilter==='all'?'selected':''}>📚 전체 범위 (Set 1∼34 · 476문항)</option>
-        <option value="cn" ${pref.vpSetFilter==='cn'?'selected':''}>🔥 중국 기출후기 표기 문항만 (277문항)</option>
-        <option value="g1" ${pref.vpSetFilter==='g1'?'selected':''}>📦 Set 1∼5 묶음 (70문항)</option>
-        <option value="g2" ${pref.vpSetFilter==='g2'?'selected':''}>📦 Set 6∼10 묶음 (70문항)</option>
-        <option value="g3" ${pref.vpSetFilter==='g3'?'selected':''}>📦 Set 11∼15 묶음 (70문항)</option>
-        <option value="g4" ${pref.vpSetFilter==='g4'?'selected':''}>📦 Set 16∼20 묶음 (70문항)</option>
-        <option value="g5" ${pref.vpSetFilter==='g5'?'selected':''}>📦 Set 21∼25 묶음 (70문항)</option>
-        <option value="g6" ${pref.vpSetFilter==='g6'?'selected':''}>📦 Set 26∼30 묶음 (70문항)</option>
-        <option value="g7" ${pref.vpSetFilter==='g7'?'selected':''}>📦 Set 31∼34 묶음 (56문항)</option>
-        ${Array.from({length:34}, (_,i)=>i+1).map(s => `<option value="s${s}" ${pref.vpSetFilter===`s${s}`?'selected':''}>Set ${s} 단어문제 (14문항)</option>`).join('')}
-      </select>
-      <input type="text" id="inpVPSearch" class="select-sm" placeholder="🔍 단어·뜻·문장·번호 검색..." value="${esc(vpSearchQuery)}" style="flex:1;min-width:150px">
-      <button type="button" class="btn small ghost" id="btnVPShuffle">${pref.vpShuffle ? '🔀 순서섞기 해제' : '🔀 순서 섞기'}</button>
-      <button type="button" class="btn small ghost" id="btnVPResetScreen" title="현재 화면의 풀이 선택 초기화">🔄 선택 초기화</button>
-    </div>
-  </div>`;
+        ${choicesHTML}
 
-  if (!filtered.length) {
-    html += `<div class="panel" style="text-align:center;padding:30px">
-      <div style="font-size:16px;font-weight:800;margin-bottom:8px">조건에 맞는 단어문제가 없습니다.</div>
-      <button type="button" class="btn small" id="btnVPClearFilter">전체 문제 보기</button>
+        ${!st.graded ? `
+          <button type="button" class="vpm-btn-main" id="btnVPMSubmit" style="margin-top:16px;opacity:${ready ? "1" : "0.45"}">
+            제출
+          </button>
+        ` : `
+          <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;color:${st.ok ? "#78c2a4" : "#e06c75"}">
+            <span>${st.ok ? "정답입니다" : `오답입니다 · 정답 ${q.answer}`}</span>
+            <button type="button" id="btnVPMRetry" style="font-size:12.5px;color:#8a948e;font-weight:500">다시 풀기</button>
+          </div>
+
+          ${stemExtras.length ? `
+            <div class="vpm-box">
+              <div class="vpm-box-lbl">문장 어휘</div>${stemExtras.map(([k, v]) => `${esc(k)}: ${esc(v)}`).join(" · ")}
+            </div>
+          ` : ""}
+
+          ${q.explanation ? `
+            <div class="vpm-box">
+              <div class="vpm-box-lbl">해설</div>${esc(q.explanation)}
+            </div>
+          ` : ""}
+
+          ${q.trap ? `
+            <div class="vpm-box" style="border-color:#3a2628">
+              <div class="vpm-box-lbl" style="color:#e06c75">함정</div>${esc(q.trap)}
+            </div>
+          ` : ""}
+
+          <div style="display:flex;gap:8px;margin-top:16px">
+            ${vpRun.idx > 0 ? `<button type="button" class="vpm-btn-outline" id="btnVPMPrev" style="width:90px;flex-shrink:0">이전</button>` : ""}
+            <button type="button" class="vpm-btn-main" id="btnVPMNext" style="margin-top:0">
+              ${vpRun.idx < vpRun.list.length - 1 ? "다음 문제" : "완료"}
+            </button>
+          </div>
+        `}
+      </div>
     </div>`;
-    view.innerHTML = html;
-    $('#btnVPClearFilter')?.addEventListener('click', () => {
-      pref.vpType = 'all'; pref.vpSetFilter = 'all'; pref.vpStFilter = 'all'; vpSearchQuery = ''; savePref(); render();
+
+    $("#btnVPMBack")?.addEventListener("click", () => { vpSubView = "home"; render(); window.scrollTo(0, 0); });
+    view.querySelectorAll("[data-vpm-pick]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const L = btn.dataset.vpmPick;
+        if (st.graded) {
+          const opt = q.opts[letters.indexOf(L)];
+          if (opt) speakWord(opt.w);
+          return;
+        }
+        if (q.type === "SE") {
+          const pk = Array.isArray(st.picked) ? st.picked.slice() : [];
+          const i = pk.indexOf(L);
+          if (i !== -1) pk.splice(i, 1);
+          else if (pk.length < 2) pk.push(L);
+          else { pk.shift(); pk.push(L); }
+          st.picked = pk;
+        } else if (q.blanks === 1) {
+          st.picked = (st.picked === L) ? "" : L;
+        } else {
+          const pk = Array.isArray(st.picked) ? st.picked.slice() : Array(q.blanks).fill("");
+          const cIdx = Math.floor(letters.indexOf(L) / 3);
+          if (cIdx >= 0 && cIdx < q.blanks) {
+            pk[cIdx] = (pk[cIdx] === L) ? "" : L;
+          }
+          st.picked = pk;
+        }
+        render();
+      });
+    });
+
+    $("#btnVPMSubmit")?.addEventListener("click", () => {
+      let myKey = "";
+      if (q.type === "SE") myKey = (st.picked || []).slice().sort().join("");
+      else if (q.blanks === 1) myKey = st.picked || "";
+      else myKey = (st.picked || []).join("");
+
+      st.graded = true;
+      st.ok = (myKey === q.answer);
+      saveVPState(q.id, { st: st.ok ? 2 : 1, ans: myKey, ok: st.ok });
+      render();
+    });
+
+    $("#btnVPMRetry")?.addEventListener("click", () => {
+      vpRun.answers[q.id] = {
+        picked: q.type === "SE" ? [] : (q.blanks === 1 ? "" : Array(q.blanks).fill("")),
+        graded: false,
+        ok: false
+      };
+      render();
+    });
+
+    $("#btnVPMPrev")?.addEventListener("click", () => {
+      if (vpRun.idx > 0) { vpRun.idx--; render(); window.scrollTo(0, 0); }
+    });
+    $("#btnVPMNext")?.addEventListener("click", () => {
+      if (vpRun.idx < vpRun.list.length - 1) {
+        vpRun.idx++;
+        render();
+        window.scrollTo(0, 0);
+      } else {
+        vpSubView = "home";
+        render();
+        window.scrollTo(0, 0);
+      }
     });
     return;
   }
 
-  if (pref.vpViewMode === 'card') {
-    const q = filtered[pref.vpIdx];
-    html += `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:6px">
-        <button type="button" class="btn small ghost" id="btnVPPrev" ${pref.vpIdx===0?'disabled':''}>◀ 이전</button>
-        <select id="selVPJump" class="select-sm" style="max-width:220px;font-weight:800">
-          ${filtered.map((item, idx) => {
-            const st = getVPState(item.id).st;
-            const mark = st === 2 ? '⭕ ' : (st === 1 ? '❌ ' : '');
-            return `<option value="${idx}" ${idx===pref.vpIdx?'selected':''}>${mark}#${item.num} (Set${item.set} ${item.type}) ${item.opts[0]?.w||''}...</option>`;
-          }).join('')}
-        </select>
-        <button type="button" class="btn small" id="btnVPNext" ${pref.vpIdx>=filtered.length-1?'disabled':''}>다음 ▶</button>
+  if (vpSubView === "wrong") {
+    const wrongList = all.filter(q => getVPState(q.id).st === 1);
+    const letters = "ABCDEFGHI";
+    view.innerHTML = `
+    <div class="vpm-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <button type="button" id="btnVPMWrongBack" style="color:#d5ddd8;font-size:14px;font-weight:600">← 홈으로</button>
+        ${wrongList.length ? `<button type="button" class="vpm-pill on" id="btnVPMRetryWrong" style="padding:7px 14px;font-size:13px">틀린 문제 풀기 (${wrongList.length})</button>` : ""}
       </div>
-      <div style="font-size:12px;color:var(--muted);font-weight:700">
-        진행: <b>${pref.vpIdx + 1}</b> / ${filtered.length}문항
-      </div>
-    </div>
-
-    ${renderVPCardHTML(q, pref.vpIdx, filtered.length)}
-
-    <div class="panel" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px;padding:10px">
-      <button type="button" class="btn ghost" id="btnVPBotPrev" ${pref.vpIdx===0?'disabled':''} style="justify-content:center;padding:11px 6px">◀ 이전</button>
-      <button type="button" class="btn" id="btnVPBotBad" style="background:#dc2626;justify-content:center;padding:11px 6px">❌ 몰라요·다음</button>
-      <button type="button" class="btn" id="btnVPBotOk" style="background:#16a34a;justify-content:center;padding:11px 6px">⭕ 외움·다음</button>
-      <button type="button" class="btn" id="btnVPBotNext" ${pref.vpIdx>=filtered.length-1?'disabled':''} style="justify-content:center;padding:11px 6px">다음 ▶</button>
+      <h2 class="vpm-title" style="font-size:21px;margin-bottom:14px">오답 노트 ${wrongList.length}문제</h2>
+      ${!wrongList.length ? `<div class="vpm-card" style="color:#8a948e;text-align:center;padding:32px 16px">틀린 문제가 없습니다.</div>` : wrongList.map(q => {
+        const stMock = { graded: true, picked: [] };
+        return `
+        <div class="vpm-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#8a948e">
+            <span>Set ${q.set} · #${q.num} · ${q.type === "SE" ? "SE 유의어" : `TC ${q.blanks}빈칸`}</span>
+            <button type="button" data-vpm-clearwrong="${esc(q.id)}" style="color:#78c2a4;font-size:12px;font-weight:600">외움 처리 ✓</button>
+          </div>
+          <div class="vpm-stem" style="font-size:16px;margin:10px 0 14px">${formatMonotoneStem(q, stMock)}</div>
+          <div class="vpm-opt-list">
+            ${q.opts.map((opt, i) => renderMonotoneOpt(q, opt, letters[i], stMock)).join("")}
+          </div>
+          ${q.explanation ? `<div class="vpm-box"><div class="vpm-box-lbl">해설</div>${esc(q.explanation)}</div>` : ""}
+          ${q.trap ? `<div class="vpm-box" style="border-color:#3a2628"><div class="vpm-box-lbl" style="color:#e06c75">함정</div>${esc(q.trap)}</div>` : ""}
+        </div>`;
+      }).join("")}
     </div>`;
-  } else {
-    const totalPages = Math.ceil(filtered.length / VP_PAGE_SIZE) || 1;
-    if (vpListPage > totalPages) vpListPage = totalPages;
-    const start = (vpListPage - 1) * VP_PAGE_SIZE;
-    const slice = filtered.slice(start, start + VP_PAGE_SIZE);
 
-    html += `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
-      <span style="font-size:12.5px;color:var(--muted);font-weight:700">총 <b>${filtered.length}</b>문항 중 ${start+1}∼${Math.min(filtered.length, start+VP_PAGE_SIZE)}번 표시</span>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">
-        ${Array.from({length: totalPages}, (_, i) => i + 1).map(p => `
-          <button type="button" class="f-chip ${p===vpListPage?'on':''}" data-vppage="${p}">${(p-1)*VP_PAGE_SIZE+1}∼${Math.min(filtered.length, p*VP_PAGE_SIZE)}</button>
-        `).join('')}
-      </div>
-    </div>
-    <div id="vpListContainer">
-      ${slice.map((q, idx) => renderVPCardHTML(q, start + idx, filtered.length)).join('')}
-    </div>
-    ${totalPages > 1 ? `
-      <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:14px 0">
-        ${Array.from({length: totalPages}, (_, i) => i + 1).map(p => `
-          <button type="button" class="f-chip ${p===vpListPage?'on':''}" data-vppage="${p}">${(p-1)*VP_PAGE_SIZE+1}∼${Math.min(filtered.length, p*VP_PAGE_SIZE)}</button>
-        `).join('')}
-      </div>
-    ` : ''}`;
+    $("#btnVPMWrongBack")?.addEventListener("click", () => { vpSubView = "home"; render(); window.scrollTo(0, 0); });
+    $("#btnVPMRetryWrong")?.addEventListener("click", () => { startVPRun(wrongList); });
+    view.querySelectorAll("[data-vpm-clearwrong]").forEach(b => {
+      b.addEventListener("click", () => {
+        saveVPState(b.dataset.vpmClearwrong, { st: 2, ok: true });
+        render();
+      });
+    });
+    return;
   }
 
-  view.innerHTML = html;
+  // Home View (Exact match to screenshot)
+  view.innerHTML = `
+  <div class="vpm-wrap">
+    <h1 class="vpm-title">GRE 빈칸·유의어</h1>
+    <p class="vpm-sub">
+      Text Completion ${tc1Total + tc23Total}문제 · Sentence Equivalence ${seTotal}문제.<br>
+      한 문제씩 풀고 바로 정답, 함정, 해설을 봐요.
+    </p>
 
-  $('#btnVPModeCard')?.addEventListener('click', () => { pref.vpViewMode = 'card'; savePref(); render(); });
-  $('#btnVPModeList')?.addEventListener('click', () => { pref.vpViewMode = 'list'; vpListPage = 1; savePref(); render(); });
-  $('#btnVPRevealAll')?.addEventListener('click', () => { pref.vpRevealAll = !pref.vpRevealAll; savePref(); render(); });
-  $('#btnVPShuffle')?.addEventListener('click', () => {
-    pref.vpShuffle = pref.vpShuffle ? 0 : (Date.now() % 100000);
-    pref.vpIdx = 0; vpListPage = 1; savePref(); render();
-  });
-  $('#btnVPResetScreen')?.addEventListener('click', () => {
-    vpSession = {};
-    pref.vpRevealAll = false;
-    savePref();
-    render();
-  });
+    <div class="vpm-card">
+      <div class="vpm-sec-lbl">유형</div>
+      <div class="vpm-pills">
+        <button type="button" class="vpm-pill ${pref.vpType==="all"?"on":""}" data-vpm-type="all">전체 ${all.length}</button>
+        <button type="button" class="vpm-pill ${pref.vpType==="TC1"?"on":""}" data-vpm-type="TC1">TC 1빈칸 ${tc1Total}</button>
+        <button type="button" class="vpm-pill ${pref.vpType==="TC23"?"on":""}" data-vpm-type="TC23">TC 2·3빈칸 ${tc23Total}</button>
+        <button type="button" class="vpm-pill ${pref.vpType==="SE"?"on":""}" data-vpm-type="SE">SE ${seTotal}</button>
+      </div>
 
-  view.querySelectorAll('[data-vptype]').forEach(b => {
-    b.addEventListener('click', () => { pref.vpType = b.dataset.vptype; pref.vpIdx = 0; vpListPage = 1; savePref(); render(); });
-  });
-  view.querySelectorAll('[data-vpst]').forEach(b => {
-    b.addEventListener('click', () => { pref.vpStFilter = b.dataset.vpst; pref.vpIdx = 0; vpListPage = 1; savePref(); render(); });
-  });
-  $('#selVPSet')?.addEventListener('change', e => {
-    pref.vpSetFilter = e.target.value; pref.vpIdx = 0; vpListPage = 1; savePref(); render();
-  });
-  $('#inpVPSearch')?.addEventListener('input', e => {
-    vpSearchQuery = e.target.value;
-    pref.vpIdx = 0; vpListPage = 1;
-    render();
-    const inp = $('#inpVPSearch');
-    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
-  });
+      <div class="vpm-sec-lbl">범위</div>
+      <div class="vpm-pills">
+        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved"?"on":""}" data-vpm-scope="unsolved">안 푼 문제 먼저</button>
+        <button type="button" class="vpm-pill ${pref.vpScope==="bad"?"on":""}" data-vpm-scope="bad">틀린 문제만 ${badCnt}</button>
+        <button type="button" class="vpm-pill ${pref.vpScope==="random"?"on":""}" data-vpm-scope="random">전부 랜덤</button>
+      </div>
 
-  $('#selVPJump')?.addEventListener('change', e => {
-    pref.vpIdx = Number(e.target.value); savePref(); render();
-  });
-  const goPrev = () => { if (pref.vpIdx > 0) { pref.vpIdx--; savePref(); render(); window.scrollTo(0, 0); } };
-  const goNext = () => { if (pref.vpIdx < filtered.length - 1) { pref.vpIdx++; savePref(); render(); window.scrollTo(0, 0); } };
-  $('#btnVPPrev')?.addEventListener('click', goPrev);
-  $('#btnVPNext')?.addEventListener('click', goNext);
-  $('#btnVPBotPrev')?.addEventListener('click', goPrev);
-  $('#btnVPBotNext')?.addEventListener('click', goNext);
-  $('#btnVPBotBad')?.addEventListener('click', () => {
-    const q = filtered[pref.vpIdx];
-    if (q) saveVPState(q.id, { st: 1 });
-    if (pref.vpIdx < filtered.length - 1) pref.vpIdx++;
-    savePref(); render(); window.scrollTo(0, 0);
-  });
-  $('#btnVPBotOk')?.addEventListener('click', () => {
-    const q = filtered[pref.vpIdx];
-    if (q) saveVPState(q.id, { st: 2 });
-    if (pref.vpIdx < filtered.length - 1) pref.vpIdx++;
-    savePref(); render(); window.scrollTo(0, 0);
-  });
+      <div class="vpm-sec-lbl">개수</div>
+      <div class="vpm-pills">
+        <button type="button" class="vpm-pill ${Number(pref.vpCount)===10?"on":""}" data-vpm-cnt="10">10</button>
+        <button type="button" class="vpm-pill ${Number(pref.vpCount)===20?"on":""}" data-vpm-cnt="20">20</button>
+        <button type="button" class="vpm-pill ${Number(pref.vpCount)===30?"on":""}" data-vpm-cnt="30">30</button>
+      </div>
 
-  view.querySelectorAll('[data-vppage]').forEach(b => {
-    b.addEventListener('click', () => { vpListPage = Number(b.dataset.vppage); render(); window.scrollTo(0, 0); });
+      <button type="button" class="vpm-btn-main" id="btnVPMStart">시작</button>
+
+      <div style="font-size:12px;color:#8a948e;margin:12px 0 8px">☁️ 클라우드에 저장 중 · ${solvedCnt}문제 기록</div>
+      <button type="button" class="vpm-btn-outline" id="btnVPMCopyCode">📋 기록 코드 복사 (채팅에 붙여넣기용)</button>
+    </div>
+
+    <div class="vpm-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <div style="font-size:16px;color:#f1f5f3"><b>${all.length}문제 중 ${solvedCnt}문제</b> <span style="color:#8a948e;font-weight:400;font-size:14.5px">풀었어요</span></div>
+        <div style="font-size:17px;font-weight:800;color:#78c2a4">${solvedPct}%</div>
+      </div>
+      <div class="vpm-bar-track" style="margin-bottom:8px">
+        <div class="vpm-bar-fill" style="width:${solvedPct}%"></div>
+      </div>
+      <div style="font-size:13px;color:#8a948e;margin-bottom:14px">정답 ${okCnt} · 오답 ${badCnt} · 정답률 ${accPct}%</div>
+
+      <div class="vpm-stat-row">
+        <span style="color:#8a948e">TC 1빈칸</span>
+        <div class="vpm-bar-track"><div class="vpm-bar-fill" style="width:${tc1Total ? (tc1Solved/tc1Total*100) : 0}%"></div></div>
+        <span style="color:#d5ddd8;font-variant-numeric:tabular-nums">${tc1Solved}/${tc1Total} · ${tc1Pct}%</span>
+      </div>
+      <div class="vpm-stat-row">
+        <span style="color:#8a948e">TC 2·3빈칸</span>
+        <div class="vpm-bar-track"><div class="vpm-bar-fill" style="width:${tc23Total ? (tc23Solved/tc23Total*100) : 0}%"></div></div>
+        <span style="color:#d5ddd8;font-variant-numeric:tabular-nums">${tc23Solved}/${tc23Total} · ${tc23Pct}%</span>
+      </div>
+      <div class="vpm-stat-row">
+        <span style="color:#8a948e">SE 유의어</span>
+        <div class="vpm-bar-track"><div class="vpm-bar-fill" style="width:${seTotal ? (seSolved/seTotal*100) : 0}%"></div></div>
+        <span style="color:#d5ddd8;font-variant-numeric:tabular-nums">${seSolved}/${seTotal} · ${sePct}%</span>
+      </div>
+
+      <button type="button" class="vpm-btn-outline" id="btnVPMOpenWrong" style="margin-top:14px;border-color:#2a302c;color:#78c2a4;font-weight:700">
+        📒 오답 노트 ${badCnt}문제
+      </button>
+    </div>
+  </div>`;
+
+  view.querySelectorAll("[data-vpm-type]").forEach(b => {
+    b.addEventListener("click", () => { pref.vpType = b.dataset.vpmType; savePref(); render(); });
   });
-
-  bindVPCardEvents(view, filtered);
-}
-
-function bindVPCardEvents(root, filtered) {
-  const qMap = {};
-  (M.vprobs || []).forEach(q => { qMap[q.id] = q; });
-
-  const rerenderOneOrAll = (qid) => {
-    if (pref.vpViewMode === 'list' && pref.vpStFilter === 'all') {
-      const cardEl = document.getElementById('vpcard_' + qid);
-      const q = qMap[qid];
-      if (cardEl && q) {
-        const idx = filtered.findIndex(item => item.id === qid);
-        const tmp = document.createElement('div');
-        tmp.innerHTML = renderVPCardHTML(q, idx >= 0 ? idx : 0, filtered.length);
-        const newCard = tmp.firstElementChild;
-        cardEl.replaceWith(newCard);
-        bindVPCardEvents(newCard, filtered);
-        return;
-      }
+  view.querySelectorAll("[data-vpm-scope]").forEach(b => {
+    b.addEventListener("click", () => { pref.vpScope = b.dataset.vpmScope; savePref(); render(); });
+  });
+  view.querySelectorAll("[data-vpm-cnt]").forEach(b => {
+    b.addEventListener("click", () => { pref.vpCount = Number(b.dataset.vpmCnt); savePref(); render(); });
+  });
+  $("#btnVPMStart")?.addEventListener("click", () => startVPRun());
+  $("#btnVPMOpenWrong")?.addEventListener("click", () => { vpSubView = "wrong"; render(); window.scrollTo(0, 0); });
+  $("#btnVPMCopyCode")?.addEventListener("click", () => {
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(vprobStore))));
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(() => alert("기록 코드가 복사되었습니다."));
+    } else {
+      prompt("아래 기록 코드를 복사하세요:", code);
     }
-    render();
-  };
-
-  const scope = root.matches && root.matches('.vp-card') ? [root] : root.querySelectorAll('.vp-card');
-  scope.forEach(card => {
-    card.querySelectorAll('[data-sp]').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        speakWord(btn.dataset.sp, btn);
-      });
-    });
-    card.querySelectorAll('[data-vp-wst]').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        setWordStatus(btn.dataset.vpWord, Number(btn.dataset.vpWst));
-        rerenderOneOrAll(card.id.replace(/^vpcard_/, ''));
-      });
-    });
-    card.querySelectorAll('[data-vp-pick]').forEach(optEl => {
-      optEl.addEventListener('click', () => {
-        const qid = optEl.dataset.vpPick;
-        const L = optEl.dataset.vpLet;
-        const q = qMap[qid];
-        if (!q) return;
-        handleVPChoiceTap(q, L);
-        rerenderOneOrAll(qid);
-      });
-    });
-    card.querySelectorAll('[data-vp-toggle]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const qid = btn.dataset.vpToggle;
-        const q = qMap[qid];
-        if (!q) return;
-        const sess = getVPSess(q);
-        if (sess.graded || pref.vpRevealAll) {
-          if (pref.vpRevealAll) pref.vpRevealAll = false;
-          resetVPSess(q);
-        } else {
-          sess.graded = true;
-          sess.revealedOnly = true;
-        }
-        rerenderOneOrAll(qid);
-      });
-    });
-    card.querySelectorAll('[data-vp-reset]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const qid = btn.dataset.vpReset;
-        const q = qMap[qid];
-        if (!q) return;
-        if (pref.vpRevealAll) pref.vpRevealAll = false;
-        resetVPSess(q);
-        rerenderOneOrAll(qid);
-      });
-    });
-    card.querySelectorAll('[data-vp-star]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const qid = btn.dataset.vpStar;
-        const cur = getVPState(qid);
-        saveVPState(qid, { star: !cur.star });
-        rerenderOneOrAll(qid);
-      });
-    });
-    card.querySelectorAll('[data-vp-setst]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const qid = btn.dataset.vpSetst;
-        const st = Number(btn.dataset.st);
-        saveVPState(qid, { st });
-        rerenderOneOrAll(qid);
-      });
-    });
   });
 }
 
@@ -3340,6 +3344,7 @@ function render() {
 
 $$('.bottom-nav .nav-item').forEach(b => {
   b.addEventListener('click', () => {
+    if (b.dataset.tab === 'vprob' && pref.tab === 'vprob') vpSubView = 'home';
     pref.tab = b.dataset.tab;
     savePref();
     render();
@@ -3348,6 +3353,7 @@ $$('.bottom-nav .nav-item').forEach(b => {
 });
 
 $('#btnHeaderVProb')?.addEventListener('click', () => {
+  vpSubView = 'home';
   pref.tab = 'vprob';
   savePref();
   render();
@@ -3385,13 +3391,17 @@ document.addEventListener('keydown', e => {
     } else if (e.key === 'Enter' || e.key === ' ') {
       if ($('#btnNextQuiz')) { e.preventDefault(); $('#btnNextQuiz').click(); }
     }
-  } else if (pref.tab === 'vprob' && pref.vpViewMode === 'card') {
-    if (e.key === 'ArrowRight') { e.preventDefault(); $('#btnVPNext')?.click(); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); $('#btnVPPrev')?.click(); }
-    else if (e.key === ' ') {
+  } else if (pref.tab === 'vprob' && vpSubView === 'solve') {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      const tgl = document.querySelector('[data-vp-toggle]');
-      if (tgl) tgl.click();
+      if ($('#btnVPMSubmit')) $('#btnVPMSubmit').click();
+      else if ($('#btnVPMNext')) $('#btnVPMNext').click();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      $('#btnVPMNext')?.click();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      $('#btnVPMPrev')?.click();
     }
   }
 });
