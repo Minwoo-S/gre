@@ -1658,32 +1658,50 @@ function saveVPState(qid, patch) {
   pushServerSync();
 }
 
-function startVPRun(customList) {
-  const all = M.vprobs || [];
-  const tp = pref.vpType || "all";
-  const sc = pref.vpScope || "unsolved";
-  const cnt = Number(pref.vpCount) || 20;
+function shuffleVPArr(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = a[i];
+    a[i] = a[j];
+    a[j] = tmp;
+  }
+  return a;
+}
 
-  let pool = customList ? customList.slice() : all.filter(q => {
+function buildVPPool(tp, sc) {
+  const all = M.vprobs || [];
+  let pool = all.filter(q => {
     if (tp === "TC1") return q.type === "TC" && q.blanks === 1;
     if (tp === "TC23") return q.type === "TC" && q.blanks >= 2;
     if (tp === "SE") return q.type === "SE";
     return true;
   });
 
-  if (!customList) {
-    if (sc === "bad") {
-      const badOnly = pool.filter(q => getVPState(q.id).st === 1);
-      if (badOnly.length > 0) pool = badOnly;
-    } else if (sc === "unsolved") {
-      const uns = pool.filter(q => getVPState(q.id).st === 0);
-      const rest = pool.filter(q => getVPState(q.id).st !== 0);
-      pool = uns.concat(rest);
-    } else if (sc === "random") {
-      pool = seededShuffle(pool, Date.now() % 1000000);
-    }
+  if (sc === "bad") {
+    const badOnly = shuffleVPArr(pool.filter(q => getVPState(q.id).st === 1));
+    if (badOnly.length > 0) pool = badOnly;
+    else pool = shuffleVPArr(pool);
+  } else if (sc === "unsolved_seq") {
+    const uns = pool.filter(q => getVPState(q.id).st === 0);
+    const rest = pool.filter(q => getVPState(q.id).st !== 0);
+    pool = uns.concat(rest);
+  } else if (sc === "unsolved") {
+    const uns = shuffleVPArr(pool.filter(q => getVPState(q.id).st === 0));
+    const rest = shuffleVPArr(pool.filter(q => getVPState(q.id).st !== 0));
+    pool = uns.concat(rest);
+  } else if (sc === "random") {
+    pool = shuffleVPArr(pool);
   }
+  return pool;
+}
 
+function startVPRun(customList) {
+  const tp = pref.vpType || "all";
+  const sc = pref.vpScope || "unsolved";
+  const cnt = Number(pref.vpCount) || 20;
+
+  const pool = customList ? shuffleVPArr(customList) : buildVPPool(tp, sc);
   const list = pool.slice(0, cnt);
   if (!list.length) return;
   vpRun = {
@@ -1777,7 +1795,7 @@ function renderMonotoneOpt(q, opt, L, st) {
 function renderVProbTab(view) {
   const all = M.vprobs || [];
   if (!pref.vpType || !["all", "TC1", "TC23", "SE"].includes(pref.vpType)) pref.vpType = "all";
-  if (!pref.vpScope || !["unsolved", "bad", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved";
+  if (!pref.vpScope || !["unsolved", "unsolved_seq", "bad", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved";
   if (!pref.vpCount || ![10, 20, 30].includes(Number(pref.vpCount))) pref.vpCount = 20;
 
   // Compute stats
@@ -1849,7 +1867,10 @@ function renderVProbTab(view) {
     <div class="vpm-wrap">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13.5px;color:#8a948e">
         <button type="button" id="btnVPMBack" style="color:#d5ddd8;font-weight:600;padding:4px 0">← 나가기</button>
-        <div><b style="color:#f1f5f3">${vpRun.idx + 1}</b> / ${vpRun.list.length} · ${typeName}</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button type="button" id="btnVPMShuffle" style="padding:4px 10px;border-radius:999px;border:1px solid #2b322e;background:#1d211f;color:#78c2a4;font-size:12px;font-weight:600">🔀 랜덤 섞기</button>
+          <span><b style="color:#f1f5f3">${vpRun.idx + 1}</b> / ${vpRun.list.length} · ${typeName}</span>
+        </div>
       </div>
       <div class="vpm-bar-track" style="margin-bottom:16px">
         <div class="vpm-bar-fill" style="width:${((vpRun.idx + 1) / vpRun.list.length) * 100}%"></div>
@@ -1904,6 +1925,24 @@ function renderVProbTab(view) {
     </div>`;
 
     $("#btnVPMBack")?.addEventListener("click", () => { vpSubView = "home"; render(); window.scrollTo(0, 0); });
+    $("#btnVPMShuffle")?.addEventListener("click", () => {
+      if (pref.vpScope === "unsolved_seq") {
+        pref.vpScope = "unsolved";
+        savePref();
+      }
+      const doneList = vpRun.list.slice(0, vpRun.idx);
+      const doneIds = new Set(doneList.map(x => x.id));
+      doneIds.add(q.id);
+      const needCnt = vpRun.list.length - doneList.length;
+      const freshPool = buildVPPool(pref.vpType || "all", pref.vpScope === "unsolved_seq" ? "unsolved" : (pref.vpScope || "unsolved"))
+        .filter(x => !doneIds.has(x.id));
+      const nextSlice = freshPool.slice(0, needCnt);
+      if (nextSlice.length) {
+        vpRun.list = doneList.concat(nextSlice);
+        render();
+        window.scrollTo(0, 0);
+      }
+    });
     view.querySelectorAll("[data-vpm-pick]").forEach(btn => {
       btn.addEventListener("click", () => {
         const L = btn.dataset.vpmPick;
@@ -2028,9 +2067,10 @@ function renderVProbTab(view) {
         <button type="button" class="vpm-pill ${pref.vpType==="SE"?"on":""}" data-vpm-type="SE">SE ${seTotal}</button>
       </div>
 
-      <div class="vpm-sec-lbl">범위</div>
+      <div class="vpm-sec-lbl">범위 · 순서</div>
       <div class="vpm-pills">
-        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved"?"on":""}" data-vpm-scope="unsolved">안 푼 문제 먼저</button>
+        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved"?"on":""}" data-vpm-scope="unsolved">안 푼 문제 (랜덤)</button>
+        <button type="button" class="vpm-pill ${pref.vpScope==="unsolved_seq"?"on":""}" data-vpm-scope="unsolved_seq">안 푼 문제 (순서대로)</button>
         <button type="button" class="vpm-pill ${pref.vpScope==="bad"?"on":""}" data-vpm-scope="bad">틀린 문제만 ${badCnt}</button>
         <button type="button" class="vpm-pill ${pref.vpScope==="random"?"on":""}" data-vpm-scope="random">전부 랜덤</button>
       </div>
