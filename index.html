@@ -358,6 +358,11 @@ body.vp-mono-mode .bottom-nav {
 }
 body.vp-mono-mode .bottom-nav .nav-item {
   color: #7c8580;
+  font-size: 13px;
+  font-weight: 600;
+}
+body.vp-mono-mode .bottom-nav .nav-item .ico {
+  display: none;
 }
 body.vp-mono-mode .bottom-nav .nav-item.active {
   color: #78c2a4;
@@ -1733,10 +1738,10 @@ function buildVPPool(tp, sc) {
 function startVPRun(customList) {
   const tp = pref.vpType || "all";
   const sc = pref.vpScope || "unsolved_rand";
-  const cnt = Number(pref.vpCount) || 20;
+  const cnt = Number(pref.vpCount);
 
   const pool = customList ? customList.slice() : buildVPPool(tp, sc);
-  const list = pool.slice(0, cnt);
+  const list = cnt === 0 ? pool.slice() : pool.slice(0, cnt || 20);
   if (!list.length) return;
   vpRun = {
     list,
@@ -1835,8 +1840,8 @@ function renderMonotoneVocabBoxes(q) {
     return `
       <div class="vpm-vocab-item ${isAns ? "ans" : ""}" data-vpm-sp="${esc(opt.w)}" style="cursor:pointer">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
-          <span style="font-weight:700;color:${isAns ? "#78c2a4" : "#f1f5f3"}">[${L}] ${esc(opt.w)} ${isAns ? '<span style="font-size:11px;color:#78c2a4">★정답</span>' : ""}</span>
-          <span style="font-size:11.5px;color:#6f7873">🔊</span>
+          <span style="font-weight:700;color:${isAns ? "#78c2a4" : "#f1f5f3"}">[${L}] ${esc(opt.w)}</span>
+          ${isAns ? '<span style="font-size:11px;color:#78c2a4;font-weight:700">정답</span>' : ""}
         </div>
         <div style="color:#d5ddd8;margin-top:2px;font-weight:600">${esc(opt.m || "")}</div>
         ${opt.s ? `<div style="font-size:11.5px;color:#8a948e;margin-top:2px">동의어: ${esc(opt.s)}</div>` : ""}
@@ -1847,7 +1852,6 @@ function renderMonotoneVocabBoxes(q) {
     <div class="vpm-vocab-item" data-vpm-sp="${esc(kw)}" style="cursor:pointer">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
         <span style="font-weight:700;color:#b8c7be">${esc(kw)}</span>
-        <span style="font-size:11.5px;color:#6f7873">🔊</span>
       </div>
       <div style="color:#d5ddd8;margin-top:2px">${esc(km)}</div>
     </div>
@@ -1872,7 +1876,7 @@ function renderVProbTab(view) {
   if (!pref.vpType || !["all", "TC1", "TC23", "SE"].includes(pref.vpType)) pref.vpType = "all";
   if (pref.vpScope === "unsolved_seq") pref.vpScope = "unsolved";
   if (!pref.vpScope || !["unsolved", "unsolved_rand", "bad", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved_rand";
-  if (!pref.vpCount || ![10, 20, 30].includes(Number(pref.vpCount))) pref.vpCount = 20;
+  if (pref.vpCount === undefined || pref.vpCount === null || ![0, 10, 20, 30].includes(Number(pref.vpCount))) pref.vpCount = 20;
   if (!pref.vpWrongTier) pref.vpWrongTier = "all";
   if (!pref.vpWrongMode || !["exact", "ge"].includes(pref.vpWrongMode)) pref.vpWrongMode = "exact";
   if (!pref.vpWrongStudyTab || !["both", "vocab", "cards"].includes(pref.vpWrongStudyTab)) pref.vpWrongStudyTab = "both";
@@ -1959,7 +1963,7 @@ function renderVProbTab(view) {
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13.5px;color:#8a948e;flex-wrap:wrap;gap:8px">
         <button type="button" id="btnVPMBack" style="color:#d5ddd8;font-weight:600;padding:4px 0">← 나가기</button>
         <div style="display:flex;align-items:center;gap:8px">
-          <button type="button" id="btnVPMShuffle" style="padding:4px 10px;border-radius:999px;border:1px solid #2b322e;background:#1d211f;color:#78c2a4;font-size:12px;font-weight:600">🔀 랜덤 섞기</button>
+          <button type="button" id="btnVPMShuffle" style="padding:4px 10px;border-radius:999px;border:1px solid #2b322e;background:#1d211f;color:#78c2a4;font-size:12px;font-weight:600">랜덤 섞기</button>
           <button type="button" data-vpm-nav="prev" style="padding:4px 9px;border-radius:8px;border:1px solid #2b322e;background:#1a1e1c;color:${vpRun.idx > 0 ? "#d5ddd8" : "#4b524e"};font-size:12px;font-weight:600" ${vpRun.idx === 0 ? "disabled" : ""}>‹ 이전</button>
           <span><b style="color:#f1f5f3">${vpRun.idx + 1}</b> / ${vpRun.list.length} · ${typeName}</span>
           <button type="button" data-vpm-nav="next" style="padding:4px 9px;border-radius:8px;border:1px solid #2b322e;background:#1a1e1c;color:#d5ddd8;font-size:12px;font-weight:600">${vpRun.idx < vpRun.list.length - 1 ? "다음 ›" : "완료 ›"}</button>
@@ -2167,7 +2171,7 @@ function renderVProbTab(view) {
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <button type="button" id="btnVPMWrongBack" style="color:#d5ddd8;font-size:14px;font-weight:600">← 홈으로</button>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${wrongList.length ? `<button type="button" class="vpm-pill on" id="btnVPMRetryWrong" style="padding:7px 14px;font-size:13px">🎯 이 목록 문제풀이로 풀기 (${wrongList.length})</button>` : ""}
+          ${wrongList.length ? `<button type="button" class="vpm-pill on" id="btnVPMRetryWrong" style="padding:7px 14px;font-size:13px">이 목록 문제풀이로 풀기 (${wrongList.length})</button>` : ""}
         </div>
       </div>
 
@@ -2195,9 +2199,9 @@ function renderVProbTab(view) {
 
         <div class="vpm-sec-lbl" style="margin-top:6px">표시 형태</div>
         <div class="vpm-pills" style="margin-bottom:0">
-          <button type="button" class="vpm-pill ${studyTab==="both"?"on":""}" data-vpm-stab="both" style="padding:7px 13px;font-size:13px">📖 답 공개 문항 + 통합 단어장 모두 보기</button>
-          <button type="button" class="vpm-pill ${studyTab==="cards"?"on":""}" data-vpm-stab="cards" style="padding:7px 13px;font-size:13px">📋 답 공개 문항 + 문항별 단어 보기 (${wrongList.length}문항)</button>
-          <button type="button" class="vpm-pill ${studyTab==="vocab"?"on":""}" data-vpm-stab="vocab" style="padding:7px 13px;font-size:13px">📚 출제 단어·구문만 모아보기 (${aggWords.length}개)</button>
+          <button type="button" class="vpm-pill ${studyTab==="both"?"on":""}" data-vpm-stab="both" style="padding:7px 13px;font-size:13px">답 공개 문항 + 통합 단어장 모두 보기</button>
+          <button type="button" class="vpm-pill ${studyTab==="cards"?"on":""}" data-vpm-stab="cards" style="padding:7px 13px;font-size:13px">답 공개 문항 + 문항별 단어 보기 (${wrongList.length}문항)</button>
+          <button type="button" class="vpm-pill ${studyTab==="vocab"?"on":""}" data-vpm-stab="vocab" style="padding:7px 13px;font-size:13px">출제 단어·구문만 모아보기 (${aggWords.length}개)</button>
         </div>
       </div>
 
@@ -2209,15 +2213,15 @@ function renderVProbTab(view) {
         ${(studyTab === "both" || studyTab === "vocab") ? `
           <div class="vpm-card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-              <div style="font-size:15px;font-weight:700;color:#f1f5f3">📚 ${esc(tierTitle)} 출제 단어 · 구문 총정리 (${aggWords.length}개)</div>
+              <div style="font-size:15px;font-weight:700;color:#f1f5f3">${esc(tierTitle)} 출제 단어 · 구문 총정리 (${aggWords.length}개)</div>
               <span style="font-size:12px;color:#8a948e">카드를 누르면 발음을 읽어줍니다</span>
             </div>
             <div class="vpm-vocab-grid">
               ${aggWords.map(item => `
                 <div class="vpm-vocab-item ${item.isAns ? "ans" : ""}" data-vpm-sp="${esc(item.w)}" style="cursor:pointer">
                   <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
-                    <span style="font-weight:700;color:${item.isAns ? "#78c2a4" : "#f1f5f3"}">${esc(item.w)} ${item.isAns ? '<span style="font-size:11px;color:#78c2a4">★정답</span>' : `<span style="font-size:10.5px;color:#7c8580">${esc(item.kind)}</span>`}</span>
-                    <span style="font-size:11px;color:#6f7873">${esc(item.srcLabel)} 🔊</span>
+                    <span style="font-weight:700;color:${item.isAns ? "#78c2a4" : "#f1f5f3"}">${esc(item.w)} ${item.isAns ? '<span style="font-size:11px;color:#78c2a4">정답</span>' : `<span style="font-size:10.5px;color:#7c8580">${esc(item.kind)}</span>`}</span>
+                    <span style="font-size:11px;color:#6f7873">${esc(item.srcLabel)}</span>
                   </div>
                   <div style="color:#d5ddd8;margin-top:2px;font-weight:600">${esc(item.m)}</div>
                   ${item.s ? `<div style="font-size:11.5px;color:#8a948e;margin-top:2px">동의어: ${esc(item.s)}</div>` : ""}
@@ -2242,7 +2246,7 @@ function renderVProbTab(view) {
                   <button type="button" data-vpm-wcdelta="1" data-vpm-qid="${esc(q.id)}" style="padding:0 5px;color:#78c2a4;font-weight:800">+</button>
                 </span>
               </div>
-              <button type="button" data-vpm-clearwrong="${esc(q.id)}" style="color:#78c2a4;font-size:12px;font-weight:600">오답 기록 초기화 ✓</button>
+              <button type="button" data-vpm-clearwrong="${esc(q.id)}" style="color:#78c2a4;font-size:12px;font-weight:600">오답 기록 초기화</button>
             </div>
             <div class="vpm-stem" style="font-size:16.5px;margin:12px 0 14px">${formatMonotoneStem(q, stMock)}</div>
             <div class="vpm-opt-list">
@@ -2332,12 +2336,13 @@ function renderVProbTab(view) {
         <button type="button" class="vpm-pill ${Number(pref.vpCount)===10?"on":""}" data-vpm-cnt="10">10</button>
         <button type="button" class="vpm-pill ${Number(pref.vpCount)===20?"on":""}" data-vpm-cnt="20">20</button>
         <button type="button" class="vpm-pill ${Number(pref.vpCount)===30?"on":""}" data-vpm-cnt="30">30</button>
+        <button type="button" class="vpm-pill ${Number(pref.vpCount)===0?"on":""}" data-vpm-cnt="0">제한 없음</button>
       </div>
 
       <button type="button" class="vpm-btn-main" id="btnVPMStart">시작</button>
 
-      <div style="font-size:12px;color:#8a948e;margin:12px 0 8px">☁️ 클라우드에 저장 중 · ${solvedCnt}문제 기록</div>
-      <button type="button" class="vpm-btn-outline" id="btnVPMCopyCode">📋 기록 코드 복사 (채팅에 붙여넣기용)</button>
+      <div style="font-size:12px;color:#8a948e;margin:12px 0 8px">클라우드에 저장 중 · ${solvedCnt}문제 기록</div>
+      <button type="button" class="vpm-btn-outline" id="btnVPMCopyCode">기록 코드 복사 (채팅에 붙여넣기용)</button>
     </div>
 
     <div class="vpm-card">
@@ -2376,7 +2381,7 @@ function renderVProbTab(view) {
       </div>
 
       <button type="button" class="vpm-btn-main" id="btnVPMOpenWrong" style="margin-top:8px">
-        📖 한 번이라도 틀린 문제 + 단어 통암기 세션 (${everBadCnt}문제 · 답 공개)
+        한 번이라도 틀린 문제 + 단어 통암기 세션 (${everBadCnt}문제 · 답 공개)
       </button>
     </div>
   </div>`;
