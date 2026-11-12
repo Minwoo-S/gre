@@ -1922,11 +1922,13 @@ function renderVProbTab(view) {
 
     view.innerHTML = `
     <div class="vpm-wrap">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13.5px;color:#8a948e">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13.5px;color:#8a948e;flex-wrap:wrap;gap:8px">
         <button type="button" id="btnVPMBack" style="color:#d5ddd8;font-weight:600;padding:4px 0">← 나가기</button>
-        <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px">
           <button type="button" id="btnVPMShuffle" style="padding:4px 10px;border-radius:999px;border:1px solid #2b322e;background:#1d211f;color:#78c2a4;font-size:12px;font-weight:600">🔀 랜덤 섞기</button>
+          <button type="button" data-vpm-nav="prev" style="padding:4px 9px;border-radius:8px;border:1px solid #2b322e;background:#1a1e1c;color:${vpRun.idx > 0 ? "#d5ddd8" : "#4b524e"};font-size:12px;font-weight:600" ${vpRun.idx === 0 ? "disabled" : ""}>‹ 이전</button>
           <span><b style="color:#f1f5f3">${vpRun.idx + 1}</b> / ${vpRun.list.length} · ${typeName}</span>
+          <button type="button" data-vpm-nav="next" style="padding:4px 9px;border-radius:8px;border:1px solid #2b322e;background:#1a1e1c;color:#d5ddd8;font-size:12px;font-weight:600">${vpRun.idx < vpRun.list.length - 1 ? "다음 ›" : "완료 ›"}</button>
         </div>
       </div>
       <div class="vpm-bar-track" style="margin-bottom:16px">
@@ -1944,13 +1946,24 @@ function renderVProbTab(view) {
         ${choicesHTML}
 
         ${!st.graded ? `
-          <button type="button" class="vpm-btn-main" id="btnVPMSubmit" style="margin-top:16px;opacity:${ready ? "1" : "0.45"}">
-            제출
-          </button>
+          <div style="display:flex;gap:8px;margin-top:16px">
+            <button type="button" class="vpm-btn-outline" data-vpm-nav="prev" style="width:96px;flex-shrink:0;opacity:${vpRun.idx > 0 ? "1" : "0.35"}" ${vpRun.idx === 0 ? "disabled" : ""}>← 이전</button>
+            <button type="button" class="vpm-btn-main" id="btnVPMSubmit" style="margin-top:0;flex:1;opacity:${ready ? "1" : "0.45"}">
+              제출
+            </button>
+            <button type="button" class="vpm-btn-outline" data-vpm-nav="next" style="width:96px;flex-shrink:0">${vpRun.idx < vpRun.list.length - 1 ? "다음 →" : "완료"}</button>
+          </div>
         ` : `
           <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;color:${st.ok ? "#78c2a4" : "#e06c75"}">
             <span>${st.ok ? "정답입니다" : `오답입니다 · 정답 ${q.answer}`}</span>
             <button type="button" id="btnVPMRetry" style="font-size:12.5px;color:#8a948e;font-weight:500">다시 풀기</button>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button type="button" class="vpm-btn-outline" data-vpm-nav="prev" style="width:105px;flex-shrink:0;opacity:${vpRun.idx > 0 ? "1" : "0.35"}" ${vpRun.idx === 0 ? "disabled" : ""}>← 이전 문제</button>
+            <button type="button" class="vpm-btn-main" data-vpm-nav="next" style="margin-top:0;flex:1">
+              ${vpRun.idx < vpRun.list.length - 1 ? "다음 문제 →" : "완료"}
+            </button>
           </div>
 
           ${renderMonotoneVocabBoxes(q)}
@@ -1968,9 +1981,9 @@ function renderVProbTab(view) {
           ` : ""}
 
           <div style="display:flex;gap:8px;margin-top:16px">
-            ${vpRun.idx > 0 ? `<button type="button" class="vpm-btn-outline" id="btnVPMPrev" style="width:90px;flex-shrink:0">이전</button>` : ""}
-            <button type="button" class="vpm-btn-main" id="btnVPMNext" style="margin-top:0">
-              ${vpRun.idx < vpRun.list.length - 1 ? "다음 문제" : "완료"}
+            <button type="button" class="vpm-btn-outline" data-vpm-nav="prev" style="width:105px;flex-shrink:0;opacity:${vpRun.idx > 0 ? "1" : "0.35"}" ${vpRun.idx === 0 ? "disabled" : ""}>← 이전 문제</button>
+            <button type="button" class="vpm-btn-main" data-vpm-nav="next" style="margin-top:0;flex:1">
+              ${vpRun.idx < vpRun.list.length - 1 ? "다음 문제 →" : "완료"}
             </button>
           </div>
         `}
@@ -2044,19 +2057,23 @@ function renderVProbTab(view) {
       render();
     });
 
-    $("#btnVPMPrev")?.addEventListener("click", () => {
-      if (vpRun.idx > 0) { vpRun.idx--; render(); window.scrollTo(0, 0); }
-    });
-    $("#btnVPMNext")?.addEventListener("click", () => {
-      if (vpRun.idx < vpRun.list.length - 1) {
-        vpRun.idx++;
-        render();
-        window.scrollTo(0, 0);
-      } else {
-        vpSubView = "home";
-        render();
-        window.scrollTo(0, 0);
-      }
+    view.querySelectorAll("[data-vpm-nav]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const dir = btn.dataset.vpmNav;
+        if (dir === "prev") {
+          if (vpRun.idx > 0) { vpRun.idx--; render(); window.scrollTo(0, 0); }
+        } else if (dir === "next") {
+          if (vpRun.idx < vpRun.list.length - 1) {
+            vpRun.idx++;
+            render();
+            window.scrollTo(0, 0);
+          } else {
+            vpSubView = "home";
+            render();
+            window.scrollTo(0, 0);
+          }
+        }
+      });
     });
     view.querySelectorAll("[data-vpm-sp]").forEach(el => {
       el.addEventListener("click", () => speakWord(el.dataset.vpmSp));

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gre-10day-offline-v27';
+const CACHE_NAME = 'gre-10day-offline-v28';
 const ASSETS = [
   './',
   './index.html',
