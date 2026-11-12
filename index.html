@@ -1678,14 +1678,36 @@ function getVPState(qid) {
 }
 function saveVPState(qid, patch) {
   const prev = getVPState(qid);
-  const cur = Object.assign({ st: 0, star: false, ans: "", ok: false, wc: prev.wc }, vprobStore[qid] || {}, patch, { t: Date.now() });
+  const cur = Object.assign({ st: 0, star: prev.star, ans: "", ok: false, wc: prev.wc }, vprobStore[qid] || {}, patch, { t: Date.now() });
   vprobStore[qid] = cur;
   saveJSON(SK_VPROB, vprobStore);
   pushServerSync();
 }
+function toggleVPStar(qid) {
+  const prev = getVPState(qid);
+  saveVPState(qid, { star: !prev.star });
+}
+
+// Seed default starred questions (Set 29 · #398 -> v229_q7) once per browser
+(function seedDefaultVPStars() {
+  const SEED_KEY = "gre10_vprob_star_seed_v1";
+  try {
+    if (!localStorage.getItem(SEED_KEY)) {
+      ["v229_q7"].forEach(qid => {
+        const prev = getVPState(qid);
+        vprobStore[qid] = Object.assign({ st: 0, star: true, ans: "", ok: false, wc: prev.wc }, vprobStore[qid] || {}, { star: true, t: Date.now() });
+      });
+      saveJSON(SK_VPROB, vprobStore);
+      localStorage.setItem(SEED_KEY, "1");
+      pushServerSync();
+    }
+  } catch (e) {}
+})();
 
 function matchVPWrongTier(qid, tier, mode) {
-  const wc = getVPState(qid).wc;
+  const s = getVPState(qid);
+  if (tier === "star") return !!s.star;
+  const wc = s.wc;
   if (wc < 1) return false;
   if (!tier || tier === "all") return wc >= 1;
   const n = Number(tier);
@@ -1714,7 +1736,10 @@ function buildVPPool(tp, sc) {
     return true;
   });
 
-  if (sc === "bad") {
+  if (sc === "star") {
+    const starred = shuffleVPArr(pool.filter(q => getVPState(q.id).star));
+    if (starred.length > 0) pool = starred;
+  } else if (sc === "bad") {
     const tier = pref.vpWrongTier || "all";
     const mode = pref.vpWrongMode || "exact";
     const badOnly = shuffleVPArr(pool.filter(q => matchVPWrongTier(q.id, tier, mode)));
@@ -1875,14 +1900,14 @@ function renderVProbTab(view) {
   const all = M.vprobs || [];
   if (!pref.vpType || !["all", "TC1", "TC23", "SE"].includes(pref.vpType)) pref.vpType = "all";
   if (pref.vpScope === "unsolved_seq") pref.vpScope = "unsolved";
-  if (!pref.vpScope || !["unsolved", "unsolved_rand", "bad", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved_rand";
+  if (!pref.vpScope || !["unsolved", "unsolved_rand", "bad", "star", "random"].includes(pref.vpScope)) pref.vpScope = "unsolved_rand";
   if (pref.vpCount === undefined || pref.vpCount === null || ![0, 10, 20, 30].includes(Number(pref.vpCount))) pref.vpCount = 20;
   if (!pref.vpWrongTier) pref.vpWrongTier = "all";
   if (!pref.vpWrongMode || !["exact", "ge"].includes(pref.vpWrongMode)) pref.vpWrongMode = "exact";
   if (!pref.vpWrongStudyTab || !["both", "vocab", "cards"].includes(pref.vpWrongStudyTab)) pref.vpWrongStudyTab = "both";
 
   // Compute stats
-  let solvedCnt = 0, okCnt = 0, badCnt = 0, everBadCnt = 0;
+  let solvedCnt = 0, okCnt = 0, badCnt = 0, everBadCnt = 0, starCnt = 0;
   let tc1Total = 0, tc1Ok = 0, tc1Solved = 0;
   let tc23Total = 0, tc23Ok = 0, tc23Solved = 0;
   let seTotal = 0, seOk = 0, seSolved = 0;
@@ -1893,6 +1918,7 @@ function renderVProbTab(view) {
     const s = getVPState(q.id);
     const solved = s.st === 1 || s.st === 2 || s.wc >= 1;
     const isOk = s.st === 2;
+    if (s.star) starCnt++;
     if (solved) solvedCnt++;
     if (isOk) okCnt++;
     if (s.st === 1) badCnt++;
@@ -1931,6 +1957,7 @@ function renderVProbTab(view) {
   if (vpSubView === "solve" && vpRun && vpRun.list.length) {
     const q = vpRun.list[vpRun.idx];
     const st = getVPRunItemState(q);
+    const qStar = getVPState(q.id).star;
     const letters = "ABCDEFGHI";
     const ready = isVPReadyToSubmit(q, st);
     const typeName = q.type === "SE" ? "SE 유의어 (2개 선택)" : `TC ${q.blanks}빈칸`;
@@ -1974,8 +2001,13 @@ function renderVProbTab(view) {
       </div>
 
       <div class="vpm-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#7c8580">
-          <span>Set ${q.set} · #${q.num}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#7c8580;gap:8px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span>Set ${q.set} · #${q.num}</span>
+            <button type="button" data-vpm-star="${esc(q.id)}" style="padding:3px 10px;border-radius:999px;border:1px solid ${qStar ? "#78c2a4" : "#2c322e"};background:${qStar ? "#1d2e27" : "#1a1e1c"};color:${qStar ? "#78c2a4" : "#8a948e"};font-size:11.5px;font-weight:700">
+              ${qStar ? "별표 완료" : "별표 체크"}
+            </button>
+          </div>
           <span>${esc(q.src || "")}</span>
         </div>
 
@@ -1992,9 +2024,12 @@ function renderVProbTab(view) {
             <button type="button" class="vpm-btn-outline" data-vpm-nav="next" style="width:96px;flex-shrink:0">${vpRun.idx < vpRun.list.length - 1 ? "다음 →" : "완료"}</button>
           </div>
         ` : `
-          <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;color:${st.ok ? "#78c2a4" : "#e06c75"}">
+          <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;color:${st.ok ? "#78c2a4" : "#e06c75"};gap:8px;flex-wrap:wrap">
             <span>${st.ok ? `정답입니다${getVPState(q.id).wc > 0 ? ` · 이전 오답 ${getVPState(q.id).wc}회` : ""}` : `오답입니다 · 정답 ${q.answer} · 누적 ${getVPState(q.id).wc}번 틀림`}</span>
-            <button type="button" id="btnVPMRetry" style="font-size:12.5px;color:#8a948e;font-weight:500">다시 풀기</button>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button type="button" data-vpm-star="${esc(q.id)}" style="padding:4px 11px;border-radius:999px;border:1px solid ${qStar ? "#78c2a4" : "#2c322e"};background:${qStar ? "#1d2e27" : "#1a1e1c"};color:${qStar ? "#78c2a4" : "#8a948e"};font-size:12px;font-weight:700">${qStar ? "별표 완료" : "별표 체크"}</button>
+              <button type="button" id="btnVPMRetry" style="font-size:12.5px;color:#8a948e;font-weight:500">다시 풀기</button>
+            </div>
           </div>
 
           <div style="display:flex;gap:8px;margin-top:10px">
@@ -2044,6 +2079,12 @@ function renderVProbTab(view) {
         render();
         window.scrollTo(0, 0);
       }
+    });
+    view.querySelectorAll("[data-vpm-star]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        toggleVPStar(btn.dataset.vpmStar);
+        render();
+      });
     });
     view.querySelectorAll("[data-vpm-pick]").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -2162,9 +2203,11 @@ function renderVProbTab(view) {
       });
     });
 
-    const tierTitle = curTier === "all"
-      ? `한 번이라도 틀린 전체 (${wrongList.length}문제)`
-      : `${curTier}${curTier === "10" || curMode === "ge" ? "번 이상" : "번"} 틀린 문제 (${wrongList.length}문제)`;
+    const tierTitle = curTier === "star"
+      ? `별표한 문제 (${wrongList.length}문제)`
+      : (curTier === "all"
+        ? `한 번이라도 틀린 전체 (${wrongList.length}문제)`
+        : `${curTier}${curTier === "10" || curMode === "ge" ? "번 이상" : "번"} 틀린 문제 (${wrongList.length}문제)`);
 
     view.innerHTML = `
     <div class="vpm-wrap">
@@ -2175,20 +2218,21 @@ function renderVProbTab(view) {
         </div>
       </div>
 
-      <h2 class="vpm-title" style="font-size:21px;margin-bottom:4px">오답 & 출제단어 통암기 세션 (답 공개)</h2>
+      <h2 class="vpm-title" style="font-size:21px;margin-bottom:4px">별표 · 오답 & 출제단어 통암기 세션 (답 공개)</h2>
       <p class="vpm-sub" style="margin-bottom:14px">
         문제풀이 방식이 아니라 처음부터 정답과 보기 단어·문장 구문 뜻이 모두 펼쳐져 있어 한눈에 외우는 학습 세션입니다.
       </p>
 
       <div class="vpm-card">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
-          <div class="vpm-sec-lbl" style="margin:0">틀린 횟수별 모음 (1번 ∼ 10번)</div>
+          <div class="vpm-sec-lbl" style="margin:0">별표 · 틀린 횟수별 모음 (1번 ∼ 10번)</div>
           <div style="display:flex;gap:6px">
             <button type="button" data-vpm-wmode="exact" style="padding:3px 9px;border-radius:999px;border:1px solid ${curMode==="exact"?"#78c2a4":"#2b322e"};background:${curMode==="exact"?"#1d2e27":"#1a1e1c"};color:${curMode==="exact"?"#78c2a4":"#8a948e"};font-size:11.5px;font-weight:600">정확히 N번 틀림</button>
             <button type="button" data-vpm-wmode="ge" style="padding:3px 9px;border-radius:999px;border:1px solid ${curMode==="ge"?"#78c2a4":"#2b322e"};background:${curMode==="ge"?"#1d2e27":"#1a1e1c"};color:${curMode==="ge"?"#78c2a4":"#8a948e"};font-size:11.5px;font-weight:600">N번 이상 누적</button>
           </div>
         </div>
         <div class="vpm-pills" style="margin-bottom:12px">
+          <button type="button" class="vpm-pill ${String(curTier)==="star"?"on":""}" data-vpm-wtier="star" style="padding:7px 13px;font-size:13px">별표한 문제 ${starCnt}</button>
           <button type="button" class="vpm-pill ${String(curTier)==="all"?"on":""}" data-vpm-wtier="all" style="padding:7px 13px;font-size:13px">한 번이라도 틀린 전체 ${everBadCnt}</button>
           ${[1,2,3,4,5,6,7,8,9,10].map(t => {
             const c = activeTierCnt(t);
@@ -2240,13 +2284,18 @@ function renderVProbTab(view) {
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 <span style="color:#f1f5f3;font-weight:700">${idx + 1}. Set ${q.set} · #${q.num}</span>
                 <span>${q.type === "SE" ? "SE 유의어" : `TC ${q.blanks}빈칸`}</span>
-                <span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:#2a1d1f;border:1px solid #522d31;color:#e06c75;font-weight:700">
-                  틀린 횟수 ${sInfo.wc}번
-                  <button type="button" data-vpm-wcdelta="-1" data-vpm-qid="${esc(q.id)}" style="padding:0 5px;color:#d5ddd8;font-weight:800">−</button>
-                  <button type="button" data-vpm-wcdelta="1" data-vpm-qid="${esc(q.id)}" style="padding:0 5px;color:#78c2a4;font-weight:800">+</button>
-                </span>
+                <button type="button" data-vpm-star="${esc(q.id)}" style="padding:2px 9px;border-radius:999px;border:1px solid ${sInfo.star ? "#78c2a4" : "#2c322e"};background:${sInfo.star ? "#1d2e27" : "#1a1e1c"};color:${sInfo.star ? "#78c2a4" : "#8a948e"};font-size:11.5px;font-weight:700">${sInfo.star ? "별표 완료" : "별표 체크"}</button>
+                ${sInfo.wc >= 1 ? `
+                  <span style="display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:#2a1d1f;border:1px solid #522d31;color:#e06c75;font-weight:700">
+                    틀린 횟수 ${sInfo.wc}번
+                    <button type="button" data-vpm-wcdelta="-1" data-vpm-qid="${esc(q.id)}" style="padding:0 5px;color:#d5ddd8;font-weight:800">−</button>
+                    <button type="button" data-vpm-wcdelta="1" data-vpm-qid="${esc(q.id)}" style="padding:0 5px;color:#78c2a4;font-weight:800">+</button>
+                  </span>
+                ` : `
+                  <span style="padding:2px 8px;border-radius:999px;background:#1a2b23;border:1px solid #2b4a3c;color:#78c2a4;font-weight:700">${sInfo.st === 2 ? "맞춘 문제" : "별표 보관"}</span>
+                `}
               </div>
-              <button type="button" data-vpm-clearwrong="${esc(q.id)}" style="color:#78c2a4;font-size:12px;font-weight:600">오답 기록 초기화</button>
+              ${sInfo.wc >= 1 ? `<button type="button" data-vpm-clearwrong="${esc(q.id)}" style="color:#78c2a4;font-size:12px;font-weight:600">오답 기록 초기화</button>` : ""}
             </div>
             <div class="vpm-stem" style="font-size:16.5px;margin:12px 0 14px">${formatMonotoneStem(q, stMock)}</div>
             <div class="vpm-opt-list">
@@ -2262,6 +2311,12 @@ function renderVProbTab(view) {
 
     $("#btnVPMWrongBack")?.addEventListener("click", () => { vpSubView = "home"; render(); window.scrollTo(0, 0); });
     $("#btnVPMRetryWrong")?.addEventListener("click", () => { startVPRun(wrongList); });
+    view.querySelectorAll("[data-vpm-star]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        toggleVPStar(btn.dataset.vpmStar);
+        render();
+      });
+    });
     view.querySelectorAll("[data-vpm-wtier]").forEach(b => {
       b.addEventListener("click", () => { pref.vpWrongTier = b.dataset.vpmWtier; savePref(); render(); });
     });
@@ -2317,6 +2372,7 @@ function renderVProbTab(view) {
         <button type="button" class="vpm-pill ${pref.vpScope==="unsolved"?"on":""}" data-vpm-scope="unsolved">안 푼 문제 먼저</button>
         <button type="button" class="vpm-pill ${pref.vpScope==="unsolved_rand"?"on":""}" data-vpm-scope="unsolved_rand">안 푼 문제 랜덤</button>
         <button type="button" class="vpm-pill ${pref.vpScope==="bad"?"on":""}" data-vpm-scope="bad">틀린 문제만 ${everBadCnt}</button>
+        <button type="button" class="vpm-pill ${pref.vpScope==="star"?"on":""}" data-vpm-scope="star">별표한 문제만 ${starCnt}</button>
         <button type="button" class="vpm-pill ${pref.vpScope==="random"?"on":""}" data-vpm-scope="random">전부 랜덤</button>
       </div>
 
@@ -2353,7 +2409,7 @@ function renderVProbTab(view) {
       <div class="vpm-bar-track" style="margin-bottom:8px">
         <div class="vpm-bar-fill" style="width:${solvedPct}%"></div>
       </div>
-      <div style="font-size:13px;color:#8a948e;margin-bottom:14px">정답 ${okCnt} · 한 번이라도 틀린 문제 ${everBadCnt} · 정답률 ${accPct}%</div>
+      <div style="font-size:13px;color:#8a948e;margin-bottom:14px">정답 ${okCnt} · 한 번이라도 틀린 문제 ${everBadCnt} · 별표 ${starCnt} · 정답률 ${accPct}%</div>
 
       <div class="vpm-stat-row">
         <span style="color:#8a948e">TC 1빈칸</span>
@@ -2371,8 +2427,9 @@ function renderVProbTab(view) {
         <span style="color:#d5ddd8;font-variant-numeric:tabular-nums">${seSolved}/${seTotal} · ${sePct}%</span>
       </div>
 
-      <div class="vpm-sec-lbl" style="margin-top:16px">틀린 횟수별 모음 (눌러서 답·단어 바로 공부)</div>
+      <div class="vpm-sec-lbl" style="margin-top:16px">별표 · 틀린 횟수별 모음 (눌러서 답·단어 바로 공부)</div>
       <div class="vpm-pills" style="margin-bottom:10px">
+        <button type="button" class="vpm-pill ${String(curWrongTier)==="star"?"on":""}" data-vpm-open-wtier="star" style="padding:6px 12px;font-size:12.5px">별표한 문제 ${starCnt}</button>
         <button type="button" class="vpm-pill ${String(curWrongTier)==="all"?"on":""}" data-vpm-open-wtier="all" style="padding:6px 12px;font-size:12.5px">전체(1번+) ${everBadCnt}</button>
         ${[1,2,3,4,5,6,7,8,9,10].map(t => {
           const c = activeTierCnt(t);
@@ -2380,9 +2437,14 @@ function renderVProbTab(view) {
         }).join("")}
       </div>
 
-      <button type="button" class="vpm-btn-main" id="btnVPMOpenWrong" style="margin-top:8px">
-        한 번이라도 틀린 문제 + 단어 통암기 세션 (${everBadCnt}문제 · 답 공개)
-      </button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button type="button" class="vpm-btn-main" id="btnVPMOpenWrong" style="margin-top:0;flex:1;min-width:220px">
+          한 번이라도 틀린 문제 + 단어 통암기 (${everBadCnt}문제 · 답 공개)
+        </button>
+        <button type="button" class="vpm-btn-outline" id="btnVPMOpenStar" style="flex:1;min-width:200px;padding:13px 14px;font-size:14.5px;font-weight:800">
+          별표한 문제 + 단어 모아보기 (${starCnt}문제 · 답 공개)
+        </button>
+      </div>
     </div>
   </div>`;
 
@@ -2409,6 +2471,7 @@ function renderVProbTab(view) {
   });
   $("#btnVPMStart")?.addEventListener("click", () => startVPRun());
   $("#btnVPMOpenWrong")?.addEventListener("click", () => { pref.vpWrongTier = "all"; savePref(); vpSubView = "wrong"; render(); window.scrollTo(0, 0); });
+  $("#btnVPMOpenStar")?.addEventListener("click", () => { pref.vpWrongTier = "star"; savePref(); vpSubView = "wrong"; render(); window.scrollTo(0, 0); });
   $("#btnVPMCopyCode")?.addEventListener("click", () => {
     const code = btoa(unescape(encodeURIComponent(JSON.stringify(vprobStore))));
     if (navigator.clipboard && navigator.clipboard.writeText) {
