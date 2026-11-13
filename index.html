@@ -1802,14 +1802,30 @@ function formatMonotoneStem(q, st) {
     const cur = bIdx++;
     if (st.graded) {
       if (q.type === "SE") {
-        const w = q.answer.split("").map(L => q.opts[letters.indexOf(L)]?.w || L).join(" / ");
+        const ansArr = q.answer.split("");
+        const w = ansArr.map(L => q.opts[letters.indexOf(L)]?.w || L).join(" / ");
+        const pk = Array.isArray(st.picked) ? st.picked.slice().sort() : [];
+        const pkKey = pk.join("");
+        if (pk.length && pkKey !== q.answer) {
+          const pw = pk.map(L => q.opts[letters.indexOf(L)]?.w || L).join(" / ");
+          return `<span style="color:#e06c75;text-decoration:line-through;font-weight:600;margin-right:6px">${esc(pw)}</span><span class="vpm-blank">${esc(w)}</span>`;
+        }
         return `<span class="vpm-blank">${esc(w)}</span>`;
       } else if (q.blanks === 1) {
         const w = q.opts[letters.indexOf(q.answer)]?.w || q.answer;
+        if (st.picked && st.picked !== q.answer) {
+          const pw = q.opts[letters.indexOf(st.picked)]?.w || st.picked;
+          return `<span style="color:#e06c75;text-decoration:line-through;font-weight:600;margin-right:6px">${esc(pw)}</span><span class="vpm-blank">${esc(w)}</span>`;
+        }
         return `<span class="vpm-blank">${esc(w)}</span>`;
       } else {
         const L = q.answer[cur];
         const w = q.opts[letters.indexOf(L)]?.w || L;
+        const pL = Array.isArray(st.picked) ? st.picked[cur] : "";
+        if (pL && pL !== L) {
+          const pw = q.opts[letters.indexOf(pL)]?.w || pL;
+          return `<span style="color:#e06c75;text-decoration:line-through;font-weight:600;margin-right:6px">${esc(pw)}</span><span class="vpm-blank">${esc(w)}</span>`;
+        }
         return `<span class="vpm-blank">${esc(w)}</span>`;
       }
     } else {
@@ -1839,18 +1855,28 @@ function renderMonotoneOpt(q, opt, L, st) {
     : (q.blanks === 1 ? st.picked === L : (st.picked || []).includes(L));
 
   let cls = "vpm-opt";
+  let badge = "";
   if (st.graded) {
-    if (isAns) cls += " ans";
-    else if (isPicked) cls += " wrong";
+    if (isAns && isPicked) {
+      cls += " ans";
+      badge = `<span style="font-size:10.5px;padding:2px 6px;border-radius:999px;background:#1a362b;border:1px solid #2e5c49;color:#78c2a4;font-weight:700;flex-shrink:0">내 선택 · 정답</span>`;
+    } else if (isAns) {
+      cls += " ans";
+      badge = `<span style="font-size:10.5px;padding:2px 6px;border-radius:999px;background:#1a362b;border:1px solid #2e5c49;color:#78c2a4;font-weight:700;flex-shrink:0">정답</span>`;
+    } else if (isPicked) {
+      cls += " wrong";
+      badge = `<span style="font-size:10.5px;padding:2px 6px;border-radius:999px;background:#3b1f23;border:1px solid #6b3238;color:#e06c75;font-weight:700;flex-shrink:0">내 선택 · 오답</span>`;
+    }
   } else if (isPicked) {
     cls += " picked";
   }
 
   return `
   <button type="button" class="${cls}" data-vpm-pick="${L}">
-    <div class="vpm-opt-left">
+    <div class="vpm-opt-left" style="flex-wrap:wrap;gap:6px">
       <span class="vpm-opt-let">${L}</span>
       <span class="vpm-opt-word">${esc(opt.w)}</span>
+      ${badge}
     </div>
     ${st.graded ? `<div class="vpm-opt-mean">${esc(opt.m || "")}</div>` : ""}
   </button>`;
@@ -2025,7 +2051,7 @@ function renderVProbTab(view) {
           </div>
         ` : `
           <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;color:${st.ok ? "#78c2a4" : "#e06c75"};gap:8px;flex-wrap:wrap">
-            <span>${st.ok ? `정답입니다${getVPState(q.id).wc > 0 ? ` · 이전 오답 ${getVPState(q.id).wc}회` : ""}` : `오답입니다 · 정답 ${q.answer} · 누적 ${getVPState(q.id).wc}번 틀림`}</span>
+            <span>${st.ok ? `정답입니다 (${q.answer})${getVPState(q.id).wc > 0 ? ` · 이전 오답 ${getVPState(q.id).wc}회` : ""}` : `오답입니다 · 내 선택 ${Array.isArray(st.picked) ? st.picked.join("") : (st.picked || "-")} / 정답 ${q.answer} · 누적 ${getVPState(q.id).wc}번 틀림`}</span>
             <div style="display:flex;align-items:center;gap:10px">
               <button type="button" data-vpm-star="${esc(q.id)}" style="padding:4px 11px;border-radius:999px;border:1px solid ${qStar ? "#78c2a4" : "#2c322e"};background:${qStar ? "#1d2e27" : "#1a1e1c"};color:${qStar ? "#78c2a4" : "#8a948e"};font-size:12px;font-weight:700">${qStar ? "별표 완료" : "별표 체크"}</button>
               <button type="button" id="btnVPMRetry" style="font-size:12.5px;color:#8a948e;font-weight:500">다시 풀기</button>
