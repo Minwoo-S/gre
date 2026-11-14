@@ -409,7 +409,23 @@ function render(){
 }
 const IMG_SCALE=0.62;
 function sizeImg(i){ if(i.naturalWidth) i.style.width=Math.round(i.naturalWidth*IMG_SCALE*zoom)+'px'; }
-function imgEl(src){ const i=el('img',{class:'qimg',src,alt:'question',loading:'eager'}); i.addEventListener('load',()=>sizeImg(i)); if(i.complete) sizeImg(i); i.addEventListener('click',()=>{ $('#lbImg').src=src; $('#lightbox').classList.remove('hidden'); }); return i; }
+function imgEl(src){
+  const cleanSrc = String(src || '').replace(/^\.?\//, '');
+  const i=el('img',{class:'qimg',src:cleanSrc,alt:'question',loading:'eager'});
+  i.addEventListener('load',()=>sizeImg(i));
+  i.addEventListener('error',()=>{
+    if(!i.dataset.retried){
+      i.dataset.retried='1';
+      i.src = cleanSrc + (cleanSrc.includes('?') ? '&' : '?') + 'v=' + Date.now();
+    } else if(!i.dataset.ghFallback){
+      i.dataset.ghFallback='1';
+      i.src = 'https://minwoo-s.github.io/gre/quant/' + cleanSrc;
+    }
+  });
+  if(i.complete && i.naturalWidth) sizeImg(i);
+  i.addEventListener('click',()=>{ $('#lbImg').src=i.src; $('#lightbox').classList.remove('hidden'); });
+  return i;
+}
 
 function answerUI(q){
   const a=S.ans[q.id];

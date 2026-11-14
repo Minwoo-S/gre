@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gre-10day-offline-v33';
+const CACHE_NAME = 'gre-10day-offline-v34';
 const ASSETS = [
   './',
   './index.html',
@@ -26,10 +26,16 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Network-First strategy for same-origin only (never intercept external audio MP3 streams)
+// Network-First strategy for core app shell only (never intercept external audio MP3 streams or static Quant PNG images)
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/') || event.request.method !== 'GET') return;
+  if (
+    url.origin !== self.location.origin ||
+    url.pathname.startsWith('/api/') ||
+    url.pathname.includes('/quant/img/') ||
+    url.pathname.endsWith('.png') ||
+    event.request.method !== 'GET'
+  ) return;
   event.respondWith(
     fetch(event.request, { cache: 'no-cache' }).then(netRes => {
       if (netRes && netRes.status === 200) {
@@ -37,6 +43,6 @@ self.addEventListener('fetch', event => {
         caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
       }
       return netRes;
-    }).catch(() => caches.match(event.request))
+    }).catch(() => caches.match(event.request).then(r => r || fetch(event.request)))
   );
 });
