@@ -170,8 +170,9 @@ button{font:inherit;cursor:pointer}
     <label><input type="checkbox" id="optNoBack"> Section 1 종료 후 되돌아가기 금지 (실전과 동일)</label>
   </div>
   <div id="cards" class="cards"></div>
-  <div style="margin-top:14px"><button class="btn ghost" id="bWrong">📒 오답 노트 (전체 기록에서 틀린 문제 모아보기)</button>
-    <button class="btn ghost" id="bExport">📤 결과 내보내기 (분석용 파일 저장)</button></div>
+  <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="bWrong">📒 오답 노트 (전체 기록에서 틀린 문제 모아보기)</button>
+    <button class="btn ghost" id="bExport">📤 결과 내보내기 (분석용 파일 저장)</button>
+    <button class="btn ghost" id="bCopyExport">📋 결과 클립보드 복사 (채팅 붙여넣기용)</button></div>
   <div id="resume" class="info hidden"></div>
   <div class="hist" id="histBox"></div>
   <div class="info">
@@ -675,17 +676,39 @@ function showWrong(){
   draw();
 }
 $('#bWrong').addEventListener('click',showWrong);
+function buildExportOut(){
+  const hist=store.get(HIST,[]);
+  const qmap={}; D.tests.forEach(t=>t.sections.forEach((sec,si)=>sec.forEach((q,qi)=>qmap[q.id]={set:t.set,sec:si+1,qn:qi+1,num:q.num,src:q.src,type:q.type,answer:q.answer,topic:q.topic,area:q.area,skills:q.skills,difficulty:q.difficulty})));
+  return {exported:new Date().toISOString(),attempts:hist.map(h=>({set:h.set,date:new Date(h.date).toISOString(),correct:h.correct,secCorrect:h.secCorrect,time:h.time,timer:h.timer,
+    items:h.items.map(it=>({...qmap[it.id],id:it.id,my:(it.ans&&typeof it.ans==='object')?`${it.ans.num||''}/${it.ans.den||''}`:it.ans,ok:it.ok,spent:it.spent,marked:it.marked,note:myNotes[it.id]||null}))})),notes:myNotes};
+}
+function autoSyncLocal(){
+  try{
+    const hist=store.get(HIST,[]);
+    if(!hist.length) return;
+    fetch('http://127.0.0.1:8765/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({quant_export:buildExportOut()})}).catch(()=>{});
+  }catch(e){}
+}
+autoSyncLocal();
 $('#bExport').addEventListener('click',()=>{
   const hist=store.get(HIST,[]);
   if(!hist.length){ msgBox('아직 저장된 응시 기록이 없습니다.'); return; }
-  const qmap={}; D.tests.forEach(t=>t.sections.forEach((sec,si)=>sec.forEach((q,qi)=>qmap[q.id]={set:t.set,sec:si+1,qn:qi+1,num:q.num,src:q.src,type:q.type,answer:q.answer,topic:q.topic,area:q.area,skills:q.skills,difficulty:q.difficulty})));
-  const out={exported:new Date().toISOString(),attempts:hist.map(h=>({set:h.set,date:new Date(h.date).toISOString(),correct:h.correct,secCorrect:h.secCorrect,time:h.time,timer:h.timer,
-    items:h.items.map(it=>({...qmap[it.id],id:it.id,my:(it.ans&&typeof it.ans==='object')?`${it.ans.num||''}/${it.ans.den||''}`:it.ans,ok:it.ok,spent:it.spent,marked:it.marked,note:myNotes[it.id]||null}))})),notes:myNotes};
+  const out=buildExportOut();
+  autoSyncLocal();
   const blob=new Blob([JSON.stringify(out,null,1)],{type:'application/json'});
   const a=document.createElement('a'); const d=new Date();
   a.href=URL.createObjectURL(blob); a.download=`GRE_quant_results_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
   document.body.appendChild(a); a.click(); a.remove();
   msgBox(`응시 기록 ${hist.length}회를 파일로 저장했습니다.<br>다운로드 폴더의 <b>${a.download}</b> 파일에 문항별 결과와 오답 메모가 들어 있어요.`);
+});
+$('#bCopyExport')?.addEventListener('click',()=>{
+  const hist=store.get(HIST,[]);
+  if(!hist.length){ msgBox('아직 저장된 응시 기록이 없습니다.'); return; }
+  const out=buildExportOut();
+  autoSyncLocal();
+  navigator.clipboard?.writeText(JSON.stringify(out)).then(()=>{
+    msgBox(`응시 기록 ${hist.length}회 전체 데이터를 클립보드에 복사했습니다! 그대로 채팅창에 붙여넣기(Cmd+V) 해주시면 됩니다.`);
+  });
 });
 
 /* ---------- calculator ---------- */
